@@ -2,7 +2,7 @@ name: Daily Fetch IPL 2025
 
 on:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '30 14 * * *'
   workflow_dispatch:
 
 jobs:
