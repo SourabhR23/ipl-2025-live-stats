@@ -7,7 +7,7 @@ from config import API_KEY, MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABA
 
 # Constants
 BASE_URL = "https://api.cricapi.com/v1/match_scorecard"
-MATCH_LIST_CSV = r"../data/IPL_2025_Match_List.csv"
+MATCH_LIST_CSV = r"data/IPL_2025_Match_List.csv"
 FETCH_LIMIT = 10
 
 # Setup database connection
