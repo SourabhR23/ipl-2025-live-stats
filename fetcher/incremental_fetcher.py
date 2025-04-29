@@ -151,28 +151,31 @@ def main():
     pending_ids = yesterday_matches['id'].tolist()
     print(f"📝 {len(pending_ids)} matches to fetch.")
 
-    all_innings, all_batting, all_bowling, all_fielding, all_extras = [], [], [], [], []
+    all_matches, all_innings, all_batting, all_bowling, all_fielding, all_extras = [], [], [], [], [], []
 
     for match_id in pending_ids:
         match_data = fetch_match_data(match_id)
         if match_data:
-            innings, batting, bowling, fielding, extras = parse_match_data(match_data)
+            matches, innings, batting, bowling, fielding, extras = parse_match_data(match_data)
+            all_matches.extend(matches)
             all_innings.extend(innings)
             all_batting.extend(batting)
             all_bowling.extend(bowling)
             all_fielding.extend(fielding)
             all_extras.extend(extras)
 
+    if all_matches:
+        pd.DataFrame(all_matches).to_sql('matches', con=engine, if_exists='append', index=False)
     if all_innings:
         pd.DataFrame(all_innings).to_sql('innings', con=engine, if_exists='append', index=False)
     if all_batting:
-        pd.DataFrame(all_batting).to_sql('batting_scorecard', con=engine, if_exists='append', index=False)
+        pd.DataFrame(all_batting).to_sql('batting_df', con=engine, if_exists='append', index=False)
     if all_bowling:
-        pd.DataFrame(all_bowling).to_sql('bowling_scorecard', con=engine, if_exists='append', index=False)
+        pd.DataFrame(all_bowling).to_sql('bowling_df', con=engine, if_exists='append', index=False)
     if all_fielding:
-        pd.DataFrame(all_fielding).to_sql('fielding_scorecard', con=engine, if_exists='append', index=False)
+        pd.DataFrame(all_fielding).to_sql('fielding_df', con=engine, if_exists='append', index=False)
     if all_extras:
-        pd.DataFrame(all_extras).to_sql('innings_extras', con=engine, if_exists='append', index=False)
+        pd.DataFrame(all_extras).to_sql('extras', con=engine, if_exists='append', index=False)
 
     print("✅ Successfully updated yesterday's matches!")
 
