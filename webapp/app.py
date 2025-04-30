@@ -9,43 +9,62 @@ st.title("🏏 IPL 2025 Matches Score Dashboard")
 
 engine = get_engine()
 
+################ MATCH SELECTION ##################
 matches_df = pd.read_sql(queries.get_all_matches(), engine)
-st.dataframe(matches_df.iloc[:,1:])
-
+#st.dataframe(matches_df.iloc[:,1:])
 match_options = matches_df['match_name'].tolist()
 selected_match = st.selectbox("Select Match", match_options)
-
 match_id = matches_df[matches_df['match_name'] == selected_match]['match_id'].values[0]
 
-################ BATTING INFORMATION ##################
-st.subheader("Batting Scorecard")
-batting_df = pd.read_sql(queries.get_batting_scorecard(match_id), engine)
-innings = batting_df['inning_name'].unique()
-t1 = innings[0].replace(" Inning 1", "")
-t2 = innings[1].replace(" Inning 1", "")
+
+################ MATCH STATUS ##################
+innings_df = pd.read_sql(queries.get_innings_details(match_id), engine)
+#st.write(innings_df)
 
 col1, col2 = st.columns(2)
 with col1:
-    st.subheader(f"Team 1: {t1}")
+    st.json({'Team' : str(innings_df['inning_name'][0]), 
+             int(innings_df['runs'][0]) : int(innings_df['wickets'][0]), 
+             'Overs': innings_df['overs'][0]})
+with col2:
+    st.json({'Team': str(innings_df['inning_name'][1]), 
+             str(innings_df['runs'][1]): int(innings_df['wickets'][1]), 
+             'Overs': innings_df['overs'][1]})
+    
+st.subheader(f"Match Status: {matches_df[matches_df['match_name'] == selected_match]['status'].values[0]}")
+
+
+################ LOADING DATA FROM DATASET ##################
+batting_df = pd.read_sql(queries.get_batting_scorecard(match_id), engine)
+bowling_df = pd.read_sql(queries.get_bowling_scorecard(match_id), engine)
+innings = batting_df['inning_name'].unique()
+
+st.text("")
+st.header("Innings Scoreboard")
+################ INNINGS 1 ##################
+st.subheader("Innings 1")
+
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader(f"Team 1: {innings[0]}")
     df1 = batting_df[batting_df['inning_name'] == innings[0]].reset_index(drop=True)
     st.dataframe(df1.iloc[:,1:])
 with col2:
-    st.subheader(f"Team 2: {t2}")
-    df2 = batting_df[batting_df['inning_name'] == innings[1]].reset_index(drop=True)
+    st.subheader(f"Team 2: {innings[1]}")
+    df2 = bowling_df[bowling_df['inning_name'] == innings[0]].reset_index(drop=True)
     st.dataframe(df2.iloc[:,1:])
 
 
-################ BOWLING INFORMATION ##################
-st.subheader("Bowling Scorecard")
-bowling_df = pd.read_sql(queries.get_bowling_scorecard(match_id), engine)
-innings = bowling_df['inning_name'].unique()
+################ INNINGS 2 ##################
+st.subheader("Innings 2")
 
 col1, col2 = st.columns(2)
 with col1:
-    st.subheader(f"Team 1: {t1}")
+    st.subheader(f"Team 1: {innings[1]}")
+    df2 = batting_df[batting_df['inning_name'] == innings[1]].reset_index(drop=True)
+    st.dataframe(df2.iloc[:,1:])
+with col2:
+    st.subheader(f"Team 2: {innings[0]}")
     df1 = bowling_df[bowling_df['inning_name'] == innings[1]].reset_index(drop=True)
     st.dataframe(df1.iloc[:,1:])
-with col2:
-    st.subheader(f"Team 2: {t2}")
-    df2 = bowling_df[bowling_df['inning_name'] == innings[0]].reset_index(drop=True)
-    st.dataframe(df2.iloc[:,1:])
+    

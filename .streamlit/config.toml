@@ -1,0 +1,3 @@
+[server]
+# Enable navigation between pages in development
+enableCORS = false
