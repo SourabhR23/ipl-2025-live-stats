@@ -175,7 +175,7 @@ def main():
     if all_fielding:
         pd.DataFrame(all_fielding).to_sql('fielding_df', con=engine, if_exists='append', index=False)
     if all_extras:
-        pd.DataFrame(all_extras).to_sql('extras', con=engine, if_exists='append', index=False)
+        pd.DataFrame(all_extras).to_sql('extras_df', con=engine, if_exists='append', index=False)
 
     print("✅ Successfully updated yesterday's matches!")
 
