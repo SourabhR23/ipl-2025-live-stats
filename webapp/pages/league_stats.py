@@ -18,6 +18,16 @@ tabs1 = st.tabs(["📊 Most Runs", "🎯 High Scores", "⚡ Strike Rate"])
 with tabs1[0]:
     most_runs_df = pd.read_sql(queries.most_runs(), engine)
     st.markdown("### 🏏 Top 10 Batsmen with Most Runs")
+    orange_cap_holder = most_runs_df['batsman_name'][0]
+    runs = int(most_runs_df['RUNS'][0])
+    st.markdown(f"""
+                    <div style="background-color:#FF6F00; padding:1px; border-radius:10px;">
+                    <h3 style="color:white; text-align:center;">🏆 <b>Orange Cap Holder</b></h3>
+                    <h2 style="color:white; text-align:center;">{orange_cap_holder}</h2>
+                    <p style="color:white; text-align:center; font-size:22px;">💥 {runs} Runs</p>
+                    </div>
+    """, unsafe_allow_html=True)
+
     st.table(style_table(most_runs_df))
 
 with tabs1[1]:
