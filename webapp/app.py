@@ -20,18 +20,20 @@ match_id = matches_df[matches_df['match_name'] == selected_match]['match_id'].va
 ################ MATCH STATUS ##################
 innings_df = pd.read_sql(queries.get_innings_details(match_id), engine)
 #st.write(innings_df)
-
-col1, col2 = st.columns(2)
-with col1:
-    st.json({'Team' : str(innings_df['inning_name'][0]), 
-             int(innings_df['runs'][0]) : int(innings_df['wickets'][0]), 
-             'Overs': innings_df['overs'][0]})
-with col2:
-    st.json({'Team': str(innings_df['inning_name'][1]), 
-             str(innings_df['runs'][1]): int(innings_df['wickets'][1]), 
-             'Overs': innings_df['overs'][1]})
     
-st.subheader(f"Match Status: {matches_df[matches_df['match_name'] == selected_match]['status'].values[0]}")
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown(f"### 🟣 {innings_df['inning_name'][0]}")
+    st.metric(label="Runs : Wickets", value=f"{innings_df['runs'][0]} / {innings_df['wickets'][0]}")
+    st.metric(label="Overs", value=str(innings_df['overs'][0]))
+
+with col2:
+    st.markdown(f"### 🔵 {innings_df['inning_name'][1]}")
+    st.metric(label="Runs : Wickets", value=f"{innings_df['runs'][1]} / {innings_df['wickets'][1]}")
+    st.metric(label="Overs", value=str(innings_df['overs'][1]))
+
+st.success(f"🏆 {matches_df[matches_df['match_name'] == selected_match]['status'].values[0]}")
 
 
 ################ LOADING DATA FROM DATASET ##################
