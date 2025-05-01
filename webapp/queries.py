@@ -50,25 +50,102 @@ def high_scores():
                 AND a.inning_name != b.inning_name
         )
         SELECT DISTINCT 
-            p.batsman_name,
-            p.runs AS highest_runs,
-            p.opponent_team
+            p.batsman_name AS Batsman,
+            p.runs AS 'Highest Runs',
+            p.opponent_team AS 'Opponent Team'
         FROM player_performance p
         JOIN max_scores m
             ON p.batsman_name = m.batsman_name AND p.runs = m.highest_runs
-        ORDER BY p.runs DESC;
+        ORDER BY p.runs DESC 
+        LIMIT 10;
+    """
+
+def strike_rate():
+    return """
+        SELECT 
+            b.batsman_name AS Batsman,
+            SUM(b.runs) AS 'Total Runs',
+            COUNT(b.match_id) AS 'Matches',
+            COUNT(b.inning_name) AS 'Innings',
+            ROUND(SUM(b.runs) / NULLIF(COUNT(b.dismissal), 0), 2) AS Average,
+            ROUND(SUM(b.runs) * 100.0 / NULLIF(SUM(b.balls), 0), 2) AS StrikeRate
+        FROM batting_df b
+        JOIN squad_df s
+            ON b.batsman_name = s.playerName
+        WHERE s.role LIKE '%%Bat%%'
+        GROUP BY b.batsman_name
+        ORDER BY StrikeRate DESC
+        LIMIT 10;
     """
 
 def get_century_stats():
     return """
         SELECT 
-            batsman_name,
-            COUNT(*) AS centuries,
-            SUM(runs) AS total_runs_in_100_plus
+            batsman_name as Batsman, 
+            COUNT(*) AS Innings,
+            SUM(runs) AS `Total Runs`,
+            COUNT(CASE WHEN runs >= 100 THEN 1 END) AS `100s`,
+            MAX(runs) AS 'Highest Score'
         FROM batting_df
-        WHERE runs >= 100
         GROUP BY batsman_name
-        ORDER BY runs DESC;
+        HAVING `100s` > 0
+        ORDER BY `Total Runs` DESC
+        LIMIT 10;
     """
 
+def get_half_century_stats():
+    return """
+        SELECT 
+            batsman_name AS Batsman, 
+            COUNT(*) AS Innings,
+            SUM(runs) AS `Total Runs`,
+            COUNT(CASE WHEN runs >= 50 THEN 1 END) AS `50s`,
+            MAX(runs) AS `Highest Score`
+        FROM batting_df
+        GROUP BY batsman_name
+        HAVING `50s` > 0
+        ORDER BY `50s` DESC, `Highest Score` DESC
+        LIMIT 10;
+    """
+
+def get_ninties():
+    return """
+        SELECT 
+            batsman_name as Batsman, 
+            COUNT(*) AS Innings,
+            SUM(runs) AS `Total Runs`,
+            COUNT(CASE WHEN runs >= 90 AND runs < 100 THEN 1 END) AS `90s`,
+            MAX(runs) AS 'Highest Score'
+        FROM batting_df
+        GROUP BY batsman_name
+        HAVING `90s` > 0
+        ORDER BY `Total Runs` DESC
+        LIMIT 10;
+    """
+
+def get_sixes():
+    return """
+        SELECT 
+            batsman_name AS Batsman,
+            COUNT(*) AS Innings, 
+            SUM(runs) AS `Total Runs`, 
+            SUM(sixes) AS `6s`
+        FROM batting_df
+        GROUP BY batsman_name
+        ORDER BY `6s` DESC, `Total Runs` DESC
+        LIMIT 10;
+    """
+
+def get_fours():
+    return """
+        SELECT 
+            batsman_name AS Batsman,
+            COUNT(*) AS Innings, 
+            SUM(runs) AS `Total Runs`, 
+            SUM(fours) AS `4s`
+        FROM batting_df
+        GROUP BY batsman_name
+        ORDER BY `4s` DESC, `Total Runs` DESC
+        LIMIT 10;
+    """
 
