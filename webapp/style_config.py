@@ -90,4 +90,33 @@ def style_table(df: pd.DataFrame):
         .format(na_rep="-", formatter={col: '{:,.0f}' for col in df.select_dtypes(include=['float', 'int']).columns})
     )
 
+def ballstyle_table(df: pd.DataFrame):
+    return (
+        df.style
+        .set_properties(**{
+            'background-color': '#121212',   # deep dark gray
+            'color': 'white',
+            'border-color': '#333',
+            'font-size': '12px',
+            'text-align': 'center'
+        })
+        .set_table_styles([{
+            'selector': 'th',
+            'props': [('background-color', '#1f1f1f'),
+                      ('color', 'white'),
+                      ('font-weight', 'bold'),
+                      ('text-align', 'center')]
+        }]).format(na_rep="-", formatter={
+            col: '{:,.1f}' if col == 'Overs' else '{:,.0f}'
+            for col in df.select_dtypes(include=['float', 'int']).columns
+        })
+    )
 
+def render_cap_holder(cap_type, name, value, color, emoji, unit):
+    st.sidebar.markdown(f"""
+    <div style='background-color:{color};padding:16px;border-radius:12px;text-align:center;margin-bottom:10px;box-shadow: 0 4px 10px rgba(0,0,0,0.3);'>
+        <div style='font-size:20px;'>{emoji} <b>{cap_type} Cap</b></div>
+        <div style='font-size:18px;font-weight:bold;color:white;margin-top:10px;'>{name}</div>
+        <div style='font-size:14px;color:white;'>✨ <b>{value} {unit}</b></div>
+    </div>
+    """, unsafe_allow_html=True)

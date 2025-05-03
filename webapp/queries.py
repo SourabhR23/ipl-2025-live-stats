@@ -2,7 +2,17 @@ def get_all_matches():
     """
     Returns an SQL query string to retrieve details of all matches from the 'matches' table.
     """
-    return ("SELECT match_id, match_name, status, venue, date, match_winner FROM matches;")
+    return """
+        SELECT 
+                match_id, 
+                match_name, 
+                status, 
+                venue, 
+                date,
+                toss_winner,
+                toss_choice, 
+                match_winner 
+        FROM matches;"""
 
 def get_batting_scorecard(match_id):
     """
@@ -149,3 +159,16 @@ def get_fours():
         LIMIT 10;
     """
 
+def most_wickets():
+    return """
+        SELECT 
+            bowler_name AS `Bowler`,
+            SUM(wickets) AS Wickets,
+            SUM(runs_conceded) AS `Runs Conceded`,
+            SUM(overs) AS `Overs`,
+            COUNT(DISTINCT match_id) AS `Matches`
+        FROM bowling_df
+        GROUP BY bowler_name
+        ORDER BY Wickets DESC
+        LIMIT 10;
+    """
