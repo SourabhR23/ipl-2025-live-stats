@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from db_connection import get_engine
 import queries
-from style_config import scorecard, get_team_color, render_innings, render_cap_holder
+from style_config import scorecard, get_team_color, get_team_logo_path, render_innings, render_cap_holder
 
 # Set page config first
 st.set_page_config(page_title="IPL 2025 Dashboard", layout="wide", page_icon="🏏")
@@ -40,24 +40,31 @@ st.subheader(f"{toss_winner} won the toss and chose to {toss_choice}")
 innings_df = pd.read_sql(queries.get_innings_details(match_id), engine)
 
 # Show scorecard-style summary
+team1 = innings_df['inning_name'][0]
+team2 = innings_df['inning_name'][1]
+
 col1, col2 = st.columns(2)
+
 with col1:
     st.markdown(scorecard(
-                    innings_df['inning_name'][0], 
-                    innings_df['runs'][0], 
-                    innings_df['wickets'][0], 
-                    innings_df['overs'][0], 
-                    get_team_color(innings_df['inning_name'][0])), 
-                    unsafe_allow_html=True)
+        team1,
+        innings_df['runs'][0],
+        innings_df['wickets'][0],
+        innings_df['overs'][0],
+        get_team_color(team1),
+        get_team_logo_path(team1)
+    ), unsafe_allow_html=True)
 
 with col2:
     st.markdown(scorecard(
-                    innings_df['inning_name'][1], 
-                    innings_df['runs'][1], 
-                    innings_df['wickets'][1], 
-                    innings_df['overs'][1], 
-                    get_team_color(innings_df['inning_name'][1])), 
-                    unsafe_allow_html=True)
+        team2,
+        innings_df['runs'][1],
+        innings_df['wickets'][1],
+        innings_df['overs'][1],
+        get_team_color(team2),
+        get_team_logo_path(team2)
+    ), unsafe_allow_html=True)
+
 
 # Match result
 st.markdown("---")

@@ -1,14 +1,63 @@
 import pandas as pd
 import streamlit as st
 
-def scorecard(team, runs, wickets, overs, color):
+import base64
+import os
+
+def scorecard(team, runs, wickets, overs, color, logo_path=None):
+    logo_html = ""
+    
+    if logo_path and os.path.exists(logo_path):
+        with open(logo_path, "rb") as img_file:
+            encoded = base64.b64encode(img_file.read()).decode()
+            logo_html = f"<img src='data:image/png;base64,{encoded}' width='160' style='margin-left:10px;'>"
+    
     return f"""
-    <div style="background-color:{color}; padding:20px; border-radius:15px; text-align:center;">
-        <h3 style="color:white;">{team}</h3>
-        <h2 style="color:white;">{runs} / {wickets}</h2>
-        <p style="color:white;">Overs: {overs}</p>
+    <div style="background-color:{color}; padding:20px; border-radius:15px;
+                display:flex; justify-content:space-between; align-items:center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        <div>{logo_html}</div>
+        <div style="text-align:right; flex:1;">
+            <h2 style="color:white; margin:0;">{team}</h2>
+            <h1 style="color:white; margin:5px 0; font-size:36px;">{runs} / {wickets}</h1>
+            <p style="color:white; margin:0; font-size:18px;">Overs: {overs}</p>
+        </div>
     </div>
     """
+
+TEAM_COLORS = {
+    "Kolkata Knight Riders": "#301934",       # Purple
+    "Mumbai Indians": "#2980b9",              # Blue
+    "Chennai Super Kings": "#f1c40f",         # Yellow
+    "Royal Challengers Bengaluru": "#c0392b", # Red
+    "Delhi Capitals": "#6495ED",              # Lighter Blue
+    "Rajasthan Royals": "#C70593",            # Pink
+    "Gujarat Titans": "#1B2133",              # Teal
+    "Sunrisers Hyderabad": "#F85E12",         # Orange
+    "Lucknow Super Giants": "#002066",        # Navy Blue
+    "Punjab Kings": "#590016"                 # Crimson       
+}
+
+TEAM_LOGO_PATHS = {
+    "Kolkata Knight Riders": "webapp\images\Kolkata.png",       
+    "Mumbai Indians": "webapp\images\Mumbai.png",              
+    "Chennai Super Kings": "webapp\images\Chennai.png",         
+    "Royal Challengers Bengaluru": "webapp\images\Bengaluru.png", 
+    "Delhi Capitals": "webapp\images\Delhi.png",              
+    "Rajasthan Royals": "webapp\images\Rajasthan.png",            
+    "Gujarat Titans": "webapp\images\Gujarat.png",              
+    "Sunrisers Hyderabad": "webapp\images\Hyderabad.png",         
+    "Lucknow Super Giants": "webapp\images\Lucknow.png",        
+    "Punjab Kings": "webapp\images\Punjab.png"                       
+}
+
+def get_team_logo_path(team_name):
+    for name, path in TEAM_LOGO_PATHS.items():
+        if name in team_name:
+            return path
+    return None
+
+
 
 def styled_table(df, highlight_col=None, name_col=None):
     style = df.style.set_properties(**{
@@ -54,18 +103,6 @@ def render_innings(innings_name, bat_df, bowl_df, opponent_name):
                                       name_col='bowler_name' if 'bowler_name' in bowl_df.columns else None)
         st.dataframe(styled_bowl_df, use_container_width=True, hide_index=True)
         
-TEAM_COLORS = {
-    "Kolkata Knight Riders": "#301934",       # Purple
-    "Mumbai Indians": "#2980b9",              # Blue
-    "Chennai Super Kings": "#f1c40f",         # Yellow
-    "Royal Challengers Bengaluru": "#c0392b", # Red
-    "Delhi Capitals": "#6495ED",              # Lighter Blue
-    "Rajasthan Royals": "#C70593",            # Pink
-    "Gujarat Titans": "#1B2133",              # Teal
-    "Sunrisers Hyderabad": "#F85E12",         # Orange
-    "Lucknow Super Giants": "#002066",        # Navy Blue
-    "Punjab Kings": "#590016"                 # Crimson       
-}
 
 def get_team_color(team):
     return TEAM_COLORS.get(team, "#555")  # fallback gray
