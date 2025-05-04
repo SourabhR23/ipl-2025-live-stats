@@ -1,3 +1,8 @@
+def get_live_match():
+    return"""
+        select * from IPL_Match_List;
+    """
+
 def get_all_matches():
     """
     Returns an SQL query string to retrieve details of all matches from the 'matches' table.

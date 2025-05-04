@@ -1,8 +1,70 @@
 import pandas as pd
 import streamlit as st
-
 import base64
 import os
+
+IPL_LOGO_PATH = os.path.join("webapp", "images", "TATA_IPL.png")
+
+def render_logo_and_title(title):
+    if os.path.exists(IPL_LOGO_PATH):
+        with open(IPL_LOGO_PATH, "rb") as f:
+            encoded_logo = base64.b64encode(f.read()).decode()
+        logo_html = f"<img src='data:image/png;base64,{encoded_logo}' width='160' style='vertical-align:middle; margin-right:10px;'>"
+    else:
+        logo_html = ""
+    
+    st.markdown(f"""
+    <div style='display:flex; align-items:center; gap:16px; margin-bottom: 10px;'>
+        {logo_html}
+        <h1 style='color:#f5f5f5; margin:0;'>{title}</h1>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_team_grid():
+    import base64
+    cols = st.columns(5)
+
+    for i, (team, logo_path) in enumerate(TEAM_LOGO_PATHS.items()):
+        with cols[i % 5]:
+            color = TEAM_COLORS.get(team, "#444")
+
+            # Load and encode logo
+            if os.path.exists(logo_path):
+                with open(logo_path, "rb") as img:
+                    encoded = base64.b64encode(img.read()).decode()
+                logo_html = f'<div style="height: 70px; display: flex; align-items: center; justify-content: center;">' \
+                            f'<img src="data:image/png;base64,{encoded}" width="90" style="display: block;"></div>'
+            else:
+                logo_html = '<div style="height: 70px; display: flex; align-items: center; justify-content: center;">⚠️</div>'
+
+            # Full card HTML (use clean quoting)
+            team_card_html = f'''
+<div style="
+    background-color:{color};
+    padding:12px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+">
+    {logo_html}
+    <p style="
+        margin-top:8px;
+        color:white;
+        font-size:15px;
+        word-wrap:break-word;
+        overflow-wrap:break-word;
+        line-height: 1.2;
+    "><b>{team}</b></p>
+</div>
+'''
+
+            # ✅ Show HTML properly
+            st.markdown(team_card_html, unsafe_allow_html=True)
+
 
 def scorecard(team, runs, wickets, overs, color, logo_path=None):
     logo_html = ""
@@ -38,8 +100,6 @@ TEAM_COLORS = {
     "Punjab Kings": "#590016"                 # Crimson       
 }
 
-import os
-
 TEAM_LOGO_PATHS = {
     "Kolkata Knight Riders": os.path.join("webapp", "images", "Kolkata.png"),
     "Mumbai Indians": os.path.join("webapp", "images", "Mumbai.png"),
@@ -50,7 +110,7 @@ TEAM_LOGO_PATHS = {
     "Gujarat Titans": os.path.join("webapp", "images", "Gujarat.png"),
     "Sunrisers Hyderabad": os.path.join("webapp", "images", "Hyderabad.png"),
     "Lucknow Super Giants": os.path.join("webapp", "images", "Lucknow.png"),
-    "Punjab Kings": os.path.join("webapp", "images", "Punjab.png"),
+    "Punjab Kings": os.path.join("webapp", "images", "Punjab.png")
 }
 
 
