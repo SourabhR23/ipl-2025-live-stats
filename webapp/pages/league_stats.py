@@ -104,3 +104,8 @@ else:
         fw = pd.read_sql(queries.five_wkts(), engine)
         st.markdown("### 🖐️ Bowlers who have taken 5 Wickets")
         st.table(style_table(fw))
+
+    with tabs2[4]:
+        be = pd.read_sql(queries.best_eco(), engine)
+        st.markdown("### 🧤 Bowlers with best Economy Bowling")
+        st.table(style_table(be))

@@ -319,3 +319,39 @@ def five_wkts():
         WHERE wickets >= 5
         ORDER BY wickets DESC, runs_conceded ASC;
     """
+
+def best_eco():
+    return """
+        SELECT 
+            bowler_name AS Bowler,
+            COUNT(DISTINCT match_id) AS Matches,
+            ROUND(SUM(CAST(overs AS DECIMAL(4,1))), 1) AS Overs,
+            COUNT(*) AS Inns,
+            SUM(wickets) AS Wkts,
+
+            -- Total Balls from overs like 4.5 → 4*6 + 5 = 29
+            ROUND(SUM(runs_conceded) / (SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + 
+                    ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) / 6), 2) AS Eco,
+
+            ROUND(CASE 
+                WHEN SUM(wickets) > 0 THEN SUM(runs_conceded) / SUM(wickets)
+                ELSE NULL
+            END, 2) AS Avg,
+
+            ROUND(CASE 
+                WHEN SUM(wickets) > 0 THEN 
+                    (SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + 
+                        ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10))
+                    ) / SUM(wickets)
+                ELSE NULL
+            END, 2) AS Sr
+
+        FROM bowling_df
+        GROUP BY bowler_name
+        HAVING SUM(wickets) > 0
+        ORDER BY Eco ASC
+        LIMIT 10;
+    """
+
+
+
