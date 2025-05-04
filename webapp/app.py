@@ -10,13 +10,19 @@ st.set_page_config(page_title="IPL 2025 Dashboard", layout="wide", page_icon="�
 # ✅ Apply dark theme styling
 st.markdown("""
     <style>
-        [data-testid="stDecoration"] { display: none; }  /* GitHub ribbon */
-        #MainMenu { visibility: hidden; }
-        footer { visibility: hidden; }
+        /* 🎨 Dark theme styles */
         .main { background-color: #0e1117; color: white; }
         h1, h2, h3, h4, h5 { color: #f0f0f0; }
         .stMetric { text-align: center; }
         .stDataFrame { border-radius: 12px; overflow: hidden; }
+
+        /* 📱 Responsive for mobile: stack columns vertically */
+        @media (max-width: 768px) {
+            div[data-testid="column"] {
+                flex: 1 1 100% !important;
+                max-width: 100% !important;
+            }
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -43,27 +49,27 @@ innings_df = pd.read_sql(queries.get_innings_details(match_id), engine)
 team1 = innings_df['inning_name'][0]
 team2 = innings_df['inning_name'][1]
 
-col1, col2 = st.columns(2)
+with st.container():
+    spacer1, col1, col2, spacer2 = st.columns([0.1, 1, 1, 0.1])  # 10% padding on sides
+    with col1:
+        st.markdown(scorecard(
+            team1,
+            innings_df['runs'][0],
+            innings_df['wickets'][0],
+            innings_df['overs'][0],
+            get_team_color(team1),
+            get_team_logo_path(team1)
+        ), unsafe_allow_html=True)
 
-with col1:
-    st.markdown(scorecard(
-        team1,
-        innings_df['runs'][0],
-        innings_df['wickets'][0],
-        innings_df['overs'][0],
-        get_team_color(team1),
-        get_team_logo_path(team1)
-    ), unsafe_allow_html=True)
-
-with col2:
-    st.markdown(scorecard(
-        team2,
-        innings_df['runs'][1],
-        innings_df['wickets'][1],
-        innings_df['overs'][1],
-        get_team_color(team2),
-        get_team_logo_path(team2)
-    ), unsafe_allow_html=True)
+    with col2:
+        st.markdown(scorecard(
+            team2,
+            innings_df['runs'][1],
+            innings_df['wickets'][1],
+            innings_df['overs'][1],
+            get_team_color(team2),
+            get_team_logo_path(team2)
+        ), unsafe_allow_html=True)
 
 
 # Match result
