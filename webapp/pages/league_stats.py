@@ -41,7 +41,7 @@ if stats_options == "Batting":
 
     with tabs1[2]:
         sr = pd.read_sql(queries.strike_rate(), engine)
-        st.markdown("### ⚡ Top 10 Batsmen with Bets Strike Rate")
+        st.markdown("### ⚡ Top 10 Batsmen with Best Strike Rate")
         st.table(style_table(sr))
 
     with tabs1[3]:
@@ -72,9 +72,10 @@ if stats_options == "Batting":
 else:
     ############ BOWLING STATISTICS ##########
     st.markdown("### 🏏 Bowling Aggregates")
-    tabs4 = st.tabs(["📊 Most WIckets", "⚡ Best Bowling Average", "Best Bowling"])
+    tabs2 = st.tabs(["🎯 Most WIckets", "📉 Best Bowling Average", "🔥 Best Bowling",
+                     "🖐️ Most 5 Wickets Haul", "🧤 Best Economy"])
 
-    with tabs4[0]:
+    with tabs2[0]:
         most_wickets_df = pd.read_sql(queries.most_wickets(), engine)
         st.markdown("### 🏏 Top 10 Bowler with Most Wickets")
         purple_cap_holder = most_wickets_df['Bowler'][0]
@@ -88,3 +89,18 @@ else:
         """, unsafe_allow_html=True)
 
         st.table(ballstyle_table(most_wickets_df))
+
+    with tabs2[1]:
+        ba = pd.read_sql(queries.bowl_avg(), engine)
+        st.markdown("### 📉 Top 10 Bowlers with Best Bowling Average")
+        st.table(style_table(ba))
+
+    with tabs2[2]:
+        bb = pd.read_sql(queries.best_bowl(), engine)
+        st.markdown("### 📉 Top 10 Bowlers with Best Bowling")
+        st.table(style_table(bb))
+
+    with tabs2[3]:
+        fw = pd.read_sql(queries.five_wkts(), engine)
+        st.markdown("### 🖐️ Bowlers who have taken 5 Wickets")
+        st.table(style_table(fw))

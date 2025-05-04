@@ -114,7 +114,7 @@ def style_table(df: pd.DataFrame):
     return (
         df.style
         .set_properties(**{
-            'background-color': '#121212',   # deep dark gray
+            'background-color': '#121212',
             'color': 'white',
             'border-color': '#333',
             'font-size': '12px',
@@ -127,7 +127,10 @@ def style_table(df: pd.DataFrame):
                       ('font-weight', 'bold'),
                       ('text-align', 'center')]
         }])
-        .format(na_rep="-", formatter={col: '{:,.2f}' if col in ['Avg', 'SR'] else '{:,.0f}' for col in df.select_dtypes(include=['float', 'int']).columns})
+        .format(na_rep="-", formatter={
+            col: '{:,.2f}' if col in ['Economy', 'Avg', 'SR'] else ('{:,.1f}' if col == 'Overs' else '{:,.0f}')
+            for col in df.select_dtypes(include=['float', 'int']).columns
+        })
     )
 
 def ballstyle_table(df: pd.DataFrame):
