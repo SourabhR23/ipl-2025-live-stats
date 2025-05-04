@@ -50,7 +50,8 @@ team1 = innings_df['inning_name'][0]
 team2 = innings_df['inning_name'][1]
 
 with st.container():
-    spacer1, col1, col2, spacer2 = st.columns([0.1, 1, 1, 0.1])  # 10% padding on sides
+    #spacer1, col1, col2, spacer2 = st.columns([0.1, 1, 1, 0.1])  # 10% padding on sides
+    col1, col2 = st.columns([1, 1])
     with col1:
         st.markdown(scorecard(
             team1,
