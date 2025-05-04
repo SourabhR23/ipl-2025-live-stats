@@ -38,18 +38,21 @@ TEAM_COLORS = {
     "Punjab Kings": "#590016"                 # Crimson       
 }
 
+import os
+
 TEAM_LOGO_PATHS = {
-    "Kolkata Knight Riders": "webapp\images\Kolkata.png",       
-    "Mumbai Indians": "webapp\images\Mumbai.png",              
-    "Chennai Super Kings": "webapp\images\Chennai.png",         
-    "Royal Challengers Bengaluru": "webapp\images\Bengaluru.png", 
-    "Delhi Capitals": "webapp\images\Delhi.png",              
-    "Rajasthan Royals": "webapp\images\Rajasthan.png",            
-    "Gujarat Titans": "webapp\images\Gujarat.png",              
-    "Sunrisers Hyderabad": "webapp\images\Hyderabad.png",         
-    "Lucknow Super Giants": "webapp\images\Lucknow.png",        
-    "Punjab Kings": "webapp\images\Punjab.png"                       
+    "Kolkata Knight Riders": os.path.join("webapp", "images", "Kolkata.png"),
+    "Mumbai Indians": os.path.join("webapp", "images", "Mumbai.png"),
+    "Chennai Super Kings": os.path.join("webapp", "images", "Chennai.png"),
+    "Royal Challengers Bengaluru": os.path.join("webapp", "images", "Bengaluru.png"),
+    "Delhi Capitals": os.path.join("webapp", "images", "Delhi.png"),
+    "Rajasthan Royals": os.path.join("webapp", "images", "Rajasthan.png"),
+    "Gujarat Titans": os.path.join("webapp", "images", "Gujarat.png"),
+    "Sunrisers Hyderabad": os.path.join("webapp", "images", "Hyderabad.png"),
+    "Lucknow Super Giants": os.path.join("webapp", "images", "Lucknow.png"),
+    "Punjab Kings": os.path.join("webapp", "images", "Punjab.png"),
 }
+
 
 def get_team_logo_path(team_name):
     for name, path in TEAM_LOGO_PATHS.items():
