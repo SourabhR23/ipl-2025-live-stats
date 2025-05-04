@@ -7,6 +7,7 @@ from style_config import style_table, ballstyle_table
 
 engine = get_engine()
 
+st.set_page_config(page_title="IPL League Stats", page_icon="📊", layout="wide")
 st.title("📊 IPL 2025 League Stats")
 
 stats_options = st.sidebar.radio('Stats', 
@@ -15,13 +16,14 @@ stats_options = st.sidebar.radio('Stats',
 if stats_options == "Batting":
     ############ BATTING STATISTICS ##########
     st.markdown("### 🏏 Batting Aggregates")
-    tabs1 = st.tabs(["📊 Most Runs", "🎯 High Scores", "⚡ Strike Rate"])
+    tabs1 = st.tabs(["📊 Most Runs", "🎯 High Scores", "⚡ Strike Rate", 
+                     "💯 Hundreds", "🔥 Fifties", "😬 Nineties", "🎇 Sixes", "🚀 Fours"])
 
     with tabs1[0]:
         most_runs_df = pd.read_sql(queries.most_runs(), engine)
         st.markdown("### 🏏 Top 10 Batsmen with Most Runs")
-        orange_cap_holder = most_runs_df['batsman_name'][0]
-        runs = int(most_runs_df['RUNS'][0])
+        orange_cap_holder = most_runs_df['Batsman'][0]
+        runs = int(most_runs_df['Runs'][0])
         st.markdown(f"""
                         <div style="background-color:#FF6F00; padding:1px; border-radius:10px;">
                         <h3 style="color:white; text-align:center;">🏆 <b>Orange Cap Holder</b></h3>
@@ -42,35 +44,27 @@ if stats_options == "Batting":
         st.markdown("### ⚡ Top 10 Batsmen with Bets Strike Rate")
         st.table(style_table(sr))
 
-
-    st.markdown("### 💥 Impact Stats")
-    tabs2 = st.tabs(["💯 Hundreds", "🔥 Fifties", "😬 Nineties"])
-
-    with tabs2[0]:
+    with tabs1[3]:
         mc = pd.read_sql(queries.get_century_stats(), engine)
         st.markdown("### 💯 Top Batsmen with Most Centuries (100s)")
         st.table(style_table(mc))
 
-    with tabs2[1]:
+    with tabs1[4]:
         mf = pd.read_sql(queries.get_half_century_stats(), engine)
         st.markdown("### 🔥 Top Batsmen with Most Fifties (50s)")
         st.table(style_table(mf))
 
-    with tabs2[2]:
+    with tabs1[5]:
         mn = pd.read_sql(queries.get_ninties(), engine)
         st.markdown("### 😬 Top Batsmen with Most Nineties (90s)")
         st.table(style_table(mn))
 
-
-    st.markdown("### 🎯 Boundary Metrics")
-    tabs3 = st.tabs(["🎇 Sixes", "🚀 Fours"])
-
-    with tabs3[0]:
+    with tabs1[6]:
         ms = pd.read_sql(queries.get_sixes(), engine)
         st.markdown("### 🎇 Top Batsmen with Most Sixes (6s)")
         st.table(style_table(ms))
 
-    with tabs3[1]:
+    with tabs1[7]:
         mfs = pd.read_sql(queries.get_fours(), engine)
         st.markdown("### 🚀 Top Batsmen with Most Fours (4s)")
         st.table(style_table(mfs))

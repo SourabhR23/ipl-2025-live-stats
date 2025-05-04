@@ -32,15 +32,22 @@ def get_innings_details(march_id):
 def most_runs():
     return """
         SELECT 
-            batsman_name,
+            batsman_name AS Batsman,
             REPLACE(inning_name, ' Inning 1', '') AS Team,
-            SUM(runs) AS RUNS,
-            SUM(fours) AS FOURS,
-            SUM(sixes) AS SIXES,
-            COUNT(match_id) AS MATCHES
+            COUNT(DISTINCT match_id) AS Matches,
+            SUM(CASE WHEN dismissal IS NULL THEN 1 ELSE 0 END) AS NotOuts,
+            MAX(runs) AS HighScore,
+            SUM(runs) AS Runs,
+            ROUND(SUM(runs) * 1.0 / NULLIF(COUNT(*) - SUM(CASE WHEN dismissal IS NULL THEN 1 ELSE 0 END), 0), 2) AS Avg,
+            SUM(balls) AS `Balls Faced`,
+            ROUND(SUM(runs) * 100.0 / NULLIF(SUM(balls), 0), 2) AS SR,
+            SUM(CASE WHEN runs >= 100 THEN 1 ELSE 0 END) AS `100`,
+            SUM(CASE WHEN runs >= 50 AND runs < 100 THEN 1 ELSE 0 END) AS `50`,
+            SUM(fours) AS `4s`,
+            SUM(sixes) AS `6s`
         FROM batting_df
-        GROUP BY inning_name, batsman_name
-        ORDER BY RUNS DESC
+        GROUP BY batsman_id, batsman_name, Team
+        ORDER BY Runs DESC
         LIMIT 10;
     """
 
@@ -52,8 +59,11 @@ def high_scores():
             GROUP BY batsman_name
         ),
         player_performance AS (
-            SELECT a.batsman_name, a.runs,
-            REPLACE(b.inning_name, ' Inning 1', '') AS opponent_team
+            SELECT 
+                a.batsman_name, 
+                a.runs,
+                a.inning_name,
+                REPLACE(b.inning_name, ' Inning 1', '') AS opponent_team
             FROM batting_df a
             JOIN batting_df b 
                 ON a.match_id = b.match_id 
@@ -61,6 +71,7 @@ def high_scores():
         )
         SELECT DISTINCT 
             p.batsman_name AS Batsman,
+            REPLACE(p.inning_name, ' Inning 1', '') AS Team,
             p.runs AS 'Highest Runs',
             p.opponent_team AS 'Opponent Team'
         FROM player_performance p
@@ -91,7 +102,8 @@ def strike_rate():
 def get_century_stats():
     return """
         SELECT 
-            batsman_name as Batsman, 
+            batsman_name as Batsman,
+            REPLACE(inning_name, ' Inning 1', '') AS Team, 
             COUNT(*) AS Innings,
             SUM(runs) AS `Total Runs`,
             COUNT(CASE WHEN runs >= 100 THEN 1 END) AS `100s`,
@@ -106,7 +118,8 @@ def get_century_stats():
 def get_half_century_stats():
     return """
         SELECT 
-            batsman_name AS Batsman, 
+            batsman_name AS Batsman,
+            REPLACE(inning_name, ' Inning 1', '') AS Team, 
             COUNT(*) AS Innings,
             SUM(runs) AS `Total Runs`,
             COUNT(CASE WHEN runs >= 50 THEN 1 END) AS `50s`,
@@ -121,7 +134,8 @@ def get_half_century_stats():
 def get_ninties():
     return """
         SELECT 
-            batsman_name as Batsman, 
+            batsman_name as Batsman,
+            REPLACE(inning_name, ' Inning 1', '') AS Team, 
             COUNT(*) AS Innings,
             SUM(runs) AS `Total Runs`,
             COUNT(CASE WHEN runs >= 90 AND runs < 100 THEN 1 END) AS `90s`,
@@ -137,9 +151,10 @@ def get_sixes():
     return """
         SELECT 
             batsman_name AS Batsman,
+            REPLACE(inning_name, ' Inning 1', '') AS Team,
+            SUM(sixes) AS `6s`,
             COUNT(*) AS Innings, 
-            SUM(runs) AS `Total Runs`, 
-            SUM(sixes) AS `6s`
+            SUM(runs) AS `Total Runs`
         FROM batting_df
         GROUP BY batsman_name
         ORDER BY `6s` DESC, `Total Runs` DESC
@@ -150,9 +165,10 @@ def get_fours():
     return """
         SELECT 
             batsman_name AS Batsman,
+            REPLACE(inning_name, ' Inning 1', '') AS Team,
+            SUM(fours) AS `4s`,
             COUNT(*) AS Innings, 
-            SUM(runs) AS `Total Runs`, 
-            SUM(fours) AS `4s`
+            SUM(runs) AS `Total Runs`
         FROM batting_df
         GROUP BY batsman_name
         ORDER BY `4s` DESC, `Total Runs` DESC
@@ -161,14 +177,71 @@ def get_fours():
 
 def most_wickets():
     return """
-        SELECT 
-            bowler_name AS `Bowler`,
-            SUM(wickets) AS Wickets,
-            SUM(runs_conceded) AS `Runs Conceded`,
-            SUM(overs) AS `Overs`,
-            COUNT(DISTINCT match_id) AS `Matches`
-        FROM bowling_df
-        GROUP BY bowler_name
-        ORDER BY Wickets DESC
-        LIMIT 10;
-    """
+            WITH bowler_stats AS (
+                SELECT 
+                    bowler_name,
+                    COUNT(DISTINCT match_id) AS Matches,
+                    SUM(CAST(overs AS DECIMAL(4,1))) AS Overs,
+                    SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) AS Balls,
+                    SUM(wickets) AS Wickets,
+                    SUM(runs_conceded) AS `Runs Conceded`,
+                    SUM(CASE WHEN wickets = 4 THEN 1 ELSE 0 END) AS `4W`,
+                    SUM(CASE WHEN wickets >= 5 THEN 1 ELSE 0 END) AS `5W`,
+
+                    ROUND(
+                        CASE 
+                            WHEN SUM(wickets) > 0 THEN SUM(runs_conceded) / SUM(wickets)
+                            ELSE NULL
+                        END, 2
+                    ) AS Average,
+
+                    ROUND(
+                        SUM(runs_conceded) / 
+                        (SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) / 6), 
+                        2
+                    ) AS Economy,
+
+                    ROUND(
+                        CASE 
+                            WHEN SUM(wickets) > 0 THEN 
+                                SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) / SUM(wickets)
+                            ELSE NULL
+                        END, 2
+                    ) AS `Strike Rate`
+                FROM bowling_df
+                GROUP BY bowler_name
+            ),
+
+            bbi_per_bowler AS (
+                SELECT 
+                    bowler_name,
+                    CONCAT(MIN(runs_conceded), '/', wickets) AS BBI
+                FROM bowling_df
+                WHERE (bowler_name, wickets) IN (
+                    SELECT 
+                        bowler_name, MAX(wickets)
+                    FROM bowling_df
+                    GROUP BY bowler_name
+                )
+                GROUP BY bowler_name, wickets
+            )
+
+            SELECT 
+                s.bowler_name AS Bowler,
+                s.Matches,
+                s.Wickets,
+                s.`Runs Conceded`,
+                s.Overs,
+                s.Balls,
+                s.Average,
+                s.Economy,
+                s.`Strike Rate`,
+                s.`4W`,
+                s.`5W`,
+                b.BBI
+
+            FROM bowler_stats s
+            LEFT JOIN bbi_per_bowler b ON s.bowler_name = b.bowler_name
+            ORDER BY Wickets DESC
+            LIMIT 10;
+        """

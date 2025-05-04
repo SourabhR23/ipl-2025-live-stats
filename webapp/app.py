@@ -10,11 +10,17 @@ st.set_page_config(page_title="IPL 2025 Dashboard", layout="wide", page_icon="�
 # ✅ Apply dark theme styling
 st.markdown("""
     <style>
-        .main { background-color: #0e1117; color: white; }
-        h1, h2, h3, h4, h5 { color: #f0f0f0; }
-        .stMetric { text-align: center; }
-        .stDataFrame { border-radius: 12px; overflow: hidden; }
+        [data-testid="stDecoration"] { display: none; }
+        #MainMenu { visibility: hidden; }
+        footer { visibility: hidden; }
     </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <div style='background-color:#1f77b4;padding:15px 25px;border-radius:10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2); margin-bottom:20px;'>
+        <h1 style='color:white;margin:0;'>🏏 IPL 2025 Matches Score Dashboard</h1>
+    </div>
 """, unsafe_allow_html=True)
 
 # Page title

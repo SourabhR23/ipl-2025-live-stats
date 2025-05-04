@@ -87,7 +87,7 @@ def style_table(df: pd.DataFrame):
                       ('font-weight', 'bold'),
                       ('text-align', 'center')]
         }])
-        .format(na_rep="-", formatter={col: '{:,.0f}' for col in df.select_dtypes(include=['float', 'int']).columns})
+        .format(na_rep="-", formatter={col: '{:,.2f}' if col in ['Avg', 'SR'] else '{:,.0f}' for col in df.select_dtypes(include=['float', 'int']).columns})
     )
 
 def ballstyle_table(df: pd.DataFrame):
