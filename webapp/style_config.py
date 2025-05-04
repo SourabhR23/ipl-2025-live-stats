@@ -17,10 +17,10 @@ def scorecard(team, runs, wickets, overs, color, logo_path=None):
                 display:flex; justify-content:space-between; align-items:left;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
         <div>{logo_html}</div>
-        <div style="text-align:right; flex:1;">
+        <div style="text-align:center; flex:1;">
             <h2 style="color:white; margin:0;">{team}</h2>
             <h1 style="color:white; margin:5px 0; font-size:36px;">{runs} / {wickets}</h1>
-            <p style="color:white; margin:0; font-size:18px;">Overs: {overs}</p>
+            <p style="color:white; margin:5px; font-size:18px;">Overs: {overs}</p>
         </div>
     </div>
     """
