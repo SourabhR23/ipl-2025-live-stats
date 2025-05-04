@@ -23,24 +23,8 @@ st.markdown("""
                 max-width: 100% !important;
             }
         }
-
-        /* 🧹 Layout cleanup: remove padding */
-        .block-container {
-            padding: 0rem !important;
-        }
-
-        /* 🚫 Hide GitHub ribbon (Streamlit Cloud) */
-        #GithubIcon {
-            display: none;
-        }
-
-        /* 🚫 Hide footer and menu */
-        #MainMenu, footer {
-            visibility: hidden;
-        }
     </style>
 """, unsafe_allow_html=True)
-
 
 # Page title
 st.title("🏏 IPL 2025 Matches Score Dashboard")
