@@ -112,7 +112,6 @@ TEAM_LOGO_PATHS = {
     "Punjab Kings": os.path.join("webapp", "images", "Punjab.png")
 }
 
-
 def get_team_logo_path(team_name):
     for name, path in TEAM_LOGO_PATHS.items():
         if name in team_name:
@@ -120,11 +119,14 @@ def get_team_logo_path(team_name):
     return None
 
 # Logo for points_table
-def add_team_logo(row):
-    logo_path = TEAM_LOGO_PATHS.get(row['Team'], '')
+def add_team_logo(row, col='Team'):
+    team_name = row[col]
+    logo_path = TEAM_LOGO_PATHS.get(team_name, '')
     if logo_path and os.path.exists(logo_path):
-        return f"<img src='data:image/png;base64,{base64.b64encode(open(logo_path, 'rb').read()).decode()}' width='24'> {row['Team']}"
-    return row['Team']
+        with open(logo_path, 'rb') as image_file:
+            encoded = base64.b64encode(image_file.read()).decode()
+        return f"""<img src='data:image/png;base64,{encoded}' width='24'> {team_name}"""
+    return team_name
 
 
 def styled_table(df, highlight_col=None, name_col=None):

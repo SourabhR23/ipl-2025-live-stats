@@ -27,7 +27,7 @@ st.set_page_config(page_title="IPL Points Table", layout="wide")
 st.title("🏏 IPL 2025 Points Table")
 
 # Styling function
-final_table['Teams'] = final_table.apply(add_team_logo, axis=1)
+final_table['Teams'] = final_table.apply(lambda row: add_team_logo(row, col='Team'), axis=1)
 
 # Rearranging columns
 final_table_display = final_table[['Teams', 'Shortname', 'Matches', 'Wins', 'Loss', 'NR', 'Points', 'NRR']]
