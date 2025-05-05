@@ -8,6 +8,18 @@ from style_config import style_table, ballstyle_table
 engine = get_engine()
 
 st.set_page_config(page_title="IPL League Stats", page_icon="📊", layout="wide")
+
+# ✅ Apply dark theme styling
+st.markdown("""
+    <style>
+        /* 🎨 Dark theme styles */
+        .main { background-color: #0e1117; color: white; }
+        h1, h2, h3, h4, h5 { color: #f0f0f0; }
+        .stMetric { text-align: center; }
+        .stDataFrame { border-radius: 12px; overflow: hidden; }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("📊 IPL 2025 League Stats")
 
 stats_options = st.sidebar.radio('Stats', 

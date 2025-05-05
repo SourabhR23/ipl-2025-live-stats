@@ -7,6 +7,7 @@ from config import API_KEY, MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_DATABA
 
 # Constants
 BASE_URL = "https://api.cricapi.com/v1/match_scorecard"
+POINTS_URL = "https://api.cricapi.com/v1/series_points"
 MATCH_LIST_CSV = r"data/IPL_2025_Match_List.csv"
 FETCH_LIMIT = 10
 
@@ -134,7 +135,27 @@ def parse_match_data(match):
 
     return matches_data, innings_data, batting_data, bowling_data, fielding_data, extras_data
 
-
+def fetch_points_table(match_id):
+    pts_data = []
+    params = {"apikey": API_KEY, "id": match_id}
+    try:
+        response = requests.get(POINTS_URL, params=params, timeout=10)
+        response.raise_for_status()
+        points_json = response.json()
+        if points_json.get("status") == "success":
+            for team in points_json.get("data", []):
+                pts_data.append({
+                    'teamname': team.get('teamname'),
+                    'shortname': team.get('shortname'),
+                    'matches': team.get('matches'),
+                    'wins': team.get('wins'),
+                    'loss': team.get('loss'),
+                    'ties': team.get('ties'),
+                    'nr': team.get('nr')
+                })
+    except Exception as e:
+        print(f"❌ Error fetching points table: {e}")
+    return pts_data
 # Main Execution
 def main():
     yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -164,6 +185,10 @@ def main():
             all_fielding.extend(fielding)
             all_extras.extend(extras)
 
+    # Fetch points table separately
+    pts_id = "d5a498c8-7596-4b93-8ab0-e0efc3345312"
+    pts_data = fetch_points_table(pts_id)
+
     if all_matches:
         pd.DataFrame(all_matches).to_sql('matches', con=engine, if_exists='append', index=False)
     if all_innings:
@@ -176,6 +201,8 @@ def main():
         pd.DataFrame(all_fielding).to_sql('fielding_df', con=engine, if_exists='append', index=False)
     if all_extras:
         pd.DataFrame(all_extras).to_sql('extras_df', con=engine, if_exists='append', index=False)
+    if pts_data:
+        pd.DataFrame(pts_data).to_sql('points_table', con=engine, if_exists='replace', index=False)
 
     print("✅ Successfully updated yesterday's matches!")
 

@@ -15,14 +15,6 @@ st.markdown("""
         h1, h2, h3, h4, h5 { color: #f0f0f0; }
         .stMetric { text-align: center; }
         .stDataFrame { border-radius: 12px; overflow: hidden; }
-
-        /* 📱 Responsive for mobile: stack columns vertically */
-        @media (max-width: 768px) {
-            div[data-testid="column"] {
-                flex: 1 1 100% !important;
-                max-width: 100% !important;
-            }
-        }
     </style>
 """, unsafe_allow_html=True)
 
