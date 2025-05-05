@@ -119,6 +119,12 @@ def get_team_logo_path(team_name):
             return path
     return None
 
+# Logo for points_table
+def add_team_logo(row):
+    logo_path = TEAM_LOGO_PATHS.get(row['Team'], '')
+    if logo_path and os.path.exists(logo_path):
+        return f"<img src='data:image/png;base64,{base64.b64encode(open(logo_path, 'rb').read()).decode()}' width='24'> {row['Team']}"
+    return row['Team']
 
 
 def styled_table(df, highlight_col=None, name_col=None):

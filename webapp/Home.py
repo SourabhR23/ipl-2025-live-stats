@@ -28,8 +28,6 @@ render_logo_and_title("IPL 2025 Live Dashboard")
 # Load match data
 matches_df = pd.read_sql(queries.get_live_match(), engine)
 
-# Call below somewhere after title/team grid
-#render_match_cards(matches_df)
 
 # Key Stats
 st.markdown("### 📊 Quick Stats")
@@ -52,17 +50,20 @@ left, mid, right = st.columns(3)
 with left:
     st.markdown("#### 📋 Match Scoreboard")
     st.markdown("View live or past match scorecards with batting & bowling breakdowns.")
-    st.image("https://cdn-icons-png.flaticon.com/512/809/809957.png", width=60)
+    st.image("https://img.icons8.com/external-konkapp-outline-color-konkapp/64/external-scoreboard-soccer-konkapp-outline-color-konkapp.png", 
+             width=60)
 
 with mid:
     st.markdown("#### 📊 League Stats")
     st.markdown("Check out league leaders: runs, wickets, averages, 5-fers, and more.")
-    st.image("https://cdn-icons-png.flaticon.com/512/857/857681.png", width=60)
+    st.image("https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/64/external-analytics-business-kiranshastry-lineal-color-kiranshastry-2.png", 
+             width=60)
 
 with right:
     st.markdown("#### 📈 Points Table")
     st.markdown("Track team standings, net run rate, wins/losses and form.")
-    st.image("https://cdn-icons-png.flaticon.com/512/3784/3784184.png", width=60)
+    st.image("https://img.icons8.com/external-filled-line-andi-nur-abdillah/64/external-Leaderboard-gaming-(filled-line)-filled-line-andi-nur-abdillah.png", 
+             width=60)
 
 st.markdown("---")
 
