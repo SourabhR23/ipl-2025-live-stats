@@ -3,7 +3,7 @@ import streamlit as st
 import base64
 import os
 
-IPL_LOGO_PATH = os.path.join("webapp", "images", "TATA_IPL.png")
+IPL_LOGO_PATH = os.path.join("webapp", "images", "Tata_IPL.png")
 
 def render_logo_and_title(title):
     if os.path.exists(IPL_LOGO_PATH):
@@ -21,7 +21,6 @@ def render_logo_and_title(title):
     """, unsafe_allow_html=True)
 
 def render_team_grid():
-    import base64
     cols = st.columns(5)
 
     for i, (team, logo_path) in enumerate(TEAM_LOGO_PATHS.items()):
