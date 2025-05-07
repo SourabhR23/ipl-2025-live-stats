@@ -13,7 +13,9 @@ def get_all_matches():
                 date,
                 toss_winner,
                 toss_choice, 
-                match_winner 
+                match_winner,
+                team1,
+                team2
         FROM matches;"""
 
 def get_batting_scorecard(match_id):

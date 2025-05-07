@@ -38,28 +38,28 @@ def render_team_grid():
 
             # Full card HTML (use clean quoting)
             team_card_html = f'''
-<div style="
-    background-color:{color};
-    padding:12px;
-    border-radius:12px;
-    text-align:center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    min-height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-">
-    {logo_html}
-    <p style="
-        margin-top:8px;
-        color:white;
-        font-size:15px;
-        word-wrap:break-word;
-        overflow-wrap:break-word;
-        line-height: 1.2;
-    "><b>{team}</b></p>
-</div>
-'''
+                                <div style="
+                                    background-color:{color};
+                                    padding:12px;
+                                    border-radius:12px;
+                                    text-align:center;
+                                    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+                                    min-height: 150px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                ">
+                                    {logo_html}
+                                    <p style="
+                                        margin-top:8px;
+                                        color:white;
+                                        font-size:15px;
+                                        word-wrap:break-word;
+                                        overflow-wrap:break-word;
+                                        line-height: 1.2;
+                                    "><b>{team}</b></p>
+                                </div>
+                                '''
 
             # ✅ Show HTML properly
             st.markdown(team_card_html, unsafe_allow_html=True)

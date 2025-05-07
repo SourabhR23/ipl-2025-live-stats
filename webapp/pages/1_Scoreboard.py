@@ -38,36 +38,56 @@ st.subheader(f"{toss_winner} won the toss and chose to {toss_choice}")
 innings_df = pd.read_sql(queries.get_innings_details(match_id), engine)
 
 # Show scorecard-style summary
-team1 = innings_df['inning_name'][0]
-team2 = innings_df['inning_name'][1]
+team1 = matches_df[matches_df['match_name'] == selected_match]['team1'].values[0]
+team2 = matches_df[matches_df['match_name'] == selected_match]['team2'].values[0]
 
 with st.container():
-    #spacer1, col1, col2, spacer2 = st.columns([0.1, 1, 1, 0.1])  # 10% padding on sides
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        st.markdown(scorecard(
-            team1,
-            innings_df['runs'][0],
-            innings_df['wickets'][0],
-            innings_df['overs'][0],
-            get_team_color(team1),
-            get_team_logo_path(team1)
-        ), unsafe_allow_html=True)
+    spacer1, col1, col2, spacer2 = st.columns([0.1, 1, 1, 0.1])
+    
+    if len(innings_df) >= 1:
+        team1 = innings_df['inning_name'][0]
+        with col1:
+            st.markdown(scorecard(
+                team1,
+                innings_df['runs'][0],
+                innings_df['wickets'][0],
+                innings_df['overs'][0],
+                get_team_color(team1),
+                get_team_logo_path(team1)
+            ), unsafe_allow_html=True)
 
-    with col2:
-        st.markdown(scorecard(
-            team2,
-            innings_df['runs'][1],
-            innings_df['wickets'][1],
-            innings_df['overs'][1],
-            get_team_color(team2),
-            get_team_logo_path(team2)
-        ), unsafe_allow_html=True)
+    if len(innings_df) >= 2:
+        team2 = innings_df['inning_name'][1]
+        with col2:
+            st.markdown(scorecard(
+                team2,
+                innings_df['runs'][1],
+                innings_df['wickets'][1],
+                innings_df['overs'][1],
+                get_team_color(team2),
+                get_team_logo_path(team2)
+            ), unsafe_allow_html=True)
+    else:
+        with col2:
+            st.markdown("""
+                <div style='background-color: #2c2c2c; padding: 20px; border-radius: 10px; text-align: center color: black;;'>
+                    <h4>⚠️ Second Innings Not Played</h4>
+                    <p>The match was interrupted due to rain or ended prematurely.</p>
+                </div>
+            """, unsafe_allow_html=True)
 
 
 # Match result
-st.markdown("---")
-st.success(f"🏆 {matches_df[matches_df['match_name'] == selected_match]['status'].values[0]}")
+match_status = matches_df[matches_df['match_name'] == selected_match]['status'].values[0]
+if "cancelled" in match_status.lower() or "no result" in match_status.lower():
+    st.markdown("""
+            <div style='margin-top: 20px; padding: 20px; background-color: brown; border-left: 5px solid green; border-radius: 5px;'>
+                <strong>Match Status:</strong> 🌧️ {status}
+            </div>
+    """.format(status=match_status), unsafe_allow_html=True)
+else:
+    st.markdown("---")
+    st.success(f"🏆 {matches_df[matches_df['match_name'] == selected_match]['status'].values[0]}")
 
 
 # Load batting and bowling data
@@ -79,24 +99,20 @@ innings = batting_df['inning_name'].unique()
 st.subheader(" Innings Scoreboard ")
 st.markdown("___")
 
-# ✅ Innings 1
-st.markdown("Innings 1")
-render_innings(
-    innings_name=innings[0],
-    bat_df=batting_df[batting_df['inning_name'] == innings[0]].reset_index(drop=True),
-    bowl_df=bowling_df[bowling_df['inning_name'] == innings[0]].reset_index(drop=True),
-    opponent_name=innings[1]
-)
 
+# 2. Render innings-wise detailed batting & bowling tables
+for i in range(len(innings_df)):
+    innings_name = innings_df['inning_name'][i]
+    team_name = innings_name.split(' Inning')[0]
+    
+    # Get opponent team from innings_df or match table
+    opponent_name = innings_df['inning_name'][1 - i].split(' Inning')[0] if len(innings_df) > 1 else "N/A"
+    
+    # Filter batting and bowling data for this innings
+    bat_df = batting_df[batting_df['inning_name'] == innings_name]
+    bowl_df = bowling_df[bowling_df['inning_name'] == innings_name]
 
-# ✅ Innings 2
-st.markdown("Innings 2")
-render_innings(
-    innings_name=innings[1],
-    bat_df=batting_df[batting_df['inning_name'] == innings[1]].reset_index(drop=True),
-    bowl_df=bowling_df[bowling_df['inning_name'] == innings[1]].reset_index(drop=True),
-    opponent_name=innings[0]
-)
+    render_innings(team_name, bat_df, bowl_df, opponent_name)
 
 # Cap Holders in Sidebar
 most_runs_df = pd.read_sql(queries.most_runs(), engine)
