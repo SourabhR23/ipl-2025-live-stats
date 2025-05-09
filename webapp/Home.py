@@ -34,6 +34,17 @@ st.markdown("### 📊 Quick Stats")
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("🕹️ TOTAL MATCHES", len(matches_df))
 
+# Cap Holders in Sidebar
+most_runs_df = pd.read_sql(queries.most_runs(), engine)
+orange_cap_holder = most_runs_df['Batsman'][0]
+runs = int(most_runs_df['Runs'][0])
+render_cap_holder("Orange", orange_cap_holder, runs, "#FF6F00", "🧡", "Runs")
+
+most_wks_df = pd.read_sql(queries.most_wickets(), engine)
+purple_cap_holder = most_wks_df['Bowler'][0]
+wkts = int(most_wks_df['Wickets'][0])
+render_cap_holder("Purple", purple_cap_holder, wkts, "#6a0dad", "💜", "Wickets")
+
 st.markdown("---")
 
 # Team Logos Display

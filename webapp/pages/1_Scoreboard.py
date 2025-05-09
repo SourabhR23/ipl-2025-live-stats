@@ -93,7 +93,6 @@ else:
 # Load batting and bowling data
 batting_df = pd.read_sql(queries.get_batting_scorecard(match_id), engine)
 bowling_df = pd.read_sql(queries.get_bowling_scorecard(match_id), engine)
-innings = batting_df['inning_name'].unique()
 
 # Render innings with highlight and styled tables
 st.subheader(" Innings Scoreboard ")
@@ -106,7 +105,9 @@ for i in range(len(innings_df)):
     team_name = innings_name.split(' Inning')[0]
     
     # Get opponent team from innings_df or match table
-    opponent_name = innings_df['inning_name'][1 - i].split(' Inning')[0] if len(innings_df) > 1 else "N/A"
+    opponent_name = innings_df['inning_name'][1 - i].split(' Inning')[0] if len(innings_df) > 1 else team2
+
+
     
     # Filter batting and bowling data for this innings
     bat_df = batting_df[batting_df['inning_name'] == innings_name]
@@ -114,13 +115,4 @@ for i in range(len(innings_df)):
 
     render_innings(team_name, bat_df, bowl_df, opponent_name)
 
-# Cap Holders in Sidebar
-most_runs_df = pd.read_sql(queries.most_runs(), engine)
-orange_cap_holder = most_runs_df['Batsman'][0]
-runs = int(most_runs_df['Runs'][0])
-render_cap_holder("Orange", orange_cap_holder, runs, "#FF6F00", "🧡", "Runs")
 
-most_wks_df = pd.read_sql(queries.most_wickets(), engine)
-purple_cap_holder = most_wks_df['Bowler'][0]
-wkts = int(most_wks_df['Wickets'][0])
-render_cap_holder("Purple", purple_cap_holder, wkts, "#6a0dad", "💜", "Wickets")
