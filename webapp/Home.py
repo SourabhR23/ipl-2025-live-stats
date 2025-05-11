@@ -26,13 +26,13 @@ st.markdown("""
 render_logo_and_title("IPL 2025 Live Dashboard")
 
 # Load match data
-matches_df = pd.read_sql(queries.get_live_match(), engine)
-
+matches_df = pd.read_sql(queries.get_all_matches(), engine)
 
 # Key Stats
 st.markdown("### 📊 Quick Stats")
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("🕹️ TOTAL MATCHES", len(matches_df))
+col1, col2 = st.columns(2)
+col1.metric("🕹️ TOTAL MATCHES COMPLETED:", len(matches_df))
+
 
 # Cap Holders in Sidebar
 most_runs_df = pd.read_sql(queries.most_runs(), engine)

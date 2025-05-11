@@ -1,4 +1,3 @@
-# pages/leagie_stats.py
 import pandas as pd
 import streamlit as st
 from db_connection import get_engine
