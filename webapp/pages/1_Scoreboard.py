@@ -28,12 +28,24 @@ matches_df = pd.read_sql(queries.get_all_matches(), engine)
 match_options = matches_df['match_name'].tolist()
 selected_match = st.selectbox("Select Match", match_options)
 match_id = matches_df[matches_df['match_name'] == selected_match]['match_id'].values[0]
+venue = matches_df[matches_df['match_name'] == selected_match]['venue'].values[0]
+date =  matches_df[matches_df['match_name'] == selected_match]['date'].values[0]
 
 # Toss summary
 toss_winner = matches_df[matches_df['match_name'] == selected_match]['toss_winner'].values[0]
 toss_choice = matches_df[matches_df['match_name'] == selected_match]['toss_choice'].values[0]
 
-st.subheader(f"{toss_winner} won the toss and chose to {toss_choice}")
+# Toss Message
+st.subheader(f"🎲 {toss_winner} won the toss and chose to **{toss_choice.upper()}**")
+
+# Stylish Venue and Date Display
+st.markdown(f"""
+<div style="background-color:#111827; padding:15px; border-radius:12px; color:white; font-size:16px">
+    📍 <b>Venue:</b> {venue}<br>
+    📅 <b>Date:</b> {pd.to_datetime(date).strftime('%B %d, %Y')}
+</div>
+""", unsafe_allow_html=True)
+
 # Get match summary for 2 innings
 innings_df = pd.read_sql(queries.get_innings_details(match_id), engine)
 
