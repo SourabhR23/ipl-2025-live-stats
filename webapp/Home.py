@@ -4,6 +4,7 @@ from datetime import datetime
 from db_connection import get_engine
 import queries
 from style_config import *
+from live_api import get_live_data
 
 
 # Load data
@@ -50,11 +51,41 @@ with col2:
         st.metric("✅ Match Today", f"{len(today_matches)} Matches")
 
         for idx, row in today_matches.iterrows():
+            match_id = row['id']
             with st.expander(f"🕹️ {row['name']}"):
-                st.markdown(f"📍 Venue: _{row['venue']}_")
-    else:
-        st.metric("❌ No Match Today", "")
-        st.write("Enjoy the break 😄")
+                st.markdown(f"📍 **Venue:** _{row['venue']}_")
+                st.caption("🕒 Scores last updated from CricAPI. Cached for 3 hours to reduce API usage.")
+
+                live_data = get_live_data(match_id)
+
+                if live_data:
+                    # 🔄 Extract and display match status
+                    match_status = live_data.get('status', 'Unknown')
+                    st.markdown(f"""
+                        <div style="background-color:#444;padding:8px 16px;border-radius:8px;display:inline-block;margin-bottom:10px;">
+                            <span style="color:white;font-weight:bold;">📣 Status: {match_status}</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                    if 'score' in live_data:
+                        col1, col2 = st.columns(2)
+                        for i, inning in enumerate(live_data['score']):
+                            team = inning.get('inning', 'N/A')
+                            runs = inning.get('r', 0)
+                            wickets = inning.get('w', 0)
+                            overs = inning.get('o', 0)
+
+                            with [col1, col2][i % 2]:
+                                st.markdown(f'''
+                                    <div style="background-color:#222;padding:16px;border-radius:10px;margin-bottom:10px;">
+                                        <h3 style="color:white;">{team}</h3>
+                                        <p style="color:white;font-size:20px;"><b>{runs}/{wickets}</b> in {overs} overs</p>
+                                    </div>
+                                ''', unsafe_allow_html=True)
+                    else:
+                        st.info("Live score not available yet.")
+                else:
+                    st.info("Match has not started or data unavailable.")
 
 # Cap Holders in Sidebar
 most_runs_df = pd.read_sql(queries.most_runs(), engine)
