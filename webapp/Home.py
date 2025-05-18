@@ -48,7 +48,7 @@ with col1:
 
 with col2:
     if not today_matches.empty:
-        st.metric("✅ Match Today", f"{len(today_matches)} Matches")
+        st.metric("✅ Match Today", "Live Score:")
 
         for idx, row in today_matches.iterrows():
             match_id = row['id']
