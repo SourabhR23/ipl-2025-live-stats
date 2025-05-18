@@ -23,8 +23,8 @@ team_batting = batting_df[batting_df['batsman_id'].isin(team_squad['playerId'])]
 team_bowling = bowling_df[bowling_df['bowler_id'].isin(team_squad['playerId'])]
 
 # Display Team Logo
-team_logo = team_squad['teamImg'].iloc[0]
-st.image(team_logo, width=80)
+#team_logo = team_squad['teamImg'].iloc[0]
+#st.image(team_logo, width=80)
 
 # Batting Performance
 batting_stats = team_batting.groupby(['batsman_name']).agg({
