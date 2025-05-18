@@ -1,6 +1,6 @@
 # 🏏 IPL 2025 Live Stats Dashboard
 
-A fully automated, real-time IPL statistics dashboard built with **Streamlit**, **MySQL**, and **CricAPI**, offering live scorecards, league stats, points tables, team insights, and more — all styled in an engaging dark theme.
+A fully automated, real-time IPL statistics dashboard built with **Streamlit**, **AWS RDS**, **MySQL**, and **CricAPI**, offering live scorecards, league stats, points tables, team insights, and more — all styled in an engaging dark theme.
 
 ![IPL Logo](webapp/images/Tata_IPL.png)
 
@@ -71,10 +71,32 @@ A fully automated, real-time IPL statistics dashboard built with **Streamlit**, 
 ## ⚙️ Setup Instructions
 
 ### 🛠️ Prerequisites
+- AWS RDS instance for MySQL (configured and accessible)
 - Python 3.8+
-- AWS RDS
 - MySQL database running
 - API Key from [CricAPI](https://www.cricapi.com/)
+---
+
+### 🔐 Set Environment Variables
+Ensure your AWS RDS instance is reachable and the MySQL credentials are correct.
+
+Create a `.env` file:
+
+```env
+DB_USER=your_user
+DB_PASSWORD=your_pass
+DB_HOST=localhost
+DB_NAME=ipl2025
+CRIC_API_KEY=your_api_key
+```
+
+### 🏃 Run Streamlit App
+
+```bash
+streamlit run Home.py
+```
+
+Navigate through the sidebar to access Scoreboard, Stats, Points Table, Squads, and Team Performance pages.
 
 ---
 
@@ -107,13 +129,11 @@ A fully automated, real-time IPL statistics dashboard built with **Streamlit**, 
 - 🤖 Chatbot for live stat Q&A
 - 📊 PowerBI integration for interactive visual dashboards
 - 🕹️ Season-wise trend analytics
-- 🌐 Mobile-friendly responsive view
 
 ---
 
 ## 🤝 Credits
 - Data API: [CricAPI](https://www.cricapi.com/)
-- Icons: [Icons8](https://icons8.com/)
 - UI/UX Inspiration: IPL Official Website
 
 ---
