@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import os
+from datetime import datetime
 from db_connection import get_engine
 import queries
 from style_config import *
@@ -27,12 +27,34 @@ render_logo_and_title("IPL 2025 Live Dashboard")
 
 # Load match data
 matches_df = pd.read_sql(queries.get_all_matches(), engine)
+all_matches = pd.read_sql(queries.get_live_match(), engine)
+
+# Convert date column to datetime if not already
+all_matches['match_date'] = pd.to_datetime(all_matches['match_date']).dt.date
+
+# Get today's date
+today = datetime.today().date()
+
+# Filter matches happening today
+today_matches = all_matches[all_matches['match_date'] == today]
 
 # Key Stats
 st.markdown("### 📊 Quick Stats")
-col1, col2 = st.columns(2)
-col1.metric("🕹️ TOTAL MATCHES COMPLETED:", len(matches_df))
+col1, col2 = st.columns([1, 3])
 
+with col1:
+    col1.metric("🕹️ TOTAL MATCHES COMPLETED:", len(matches_df))
+
+with col2:
+    if not today_matches.empty:
+        st.metric("✅ Match Today", f"{len(today_matches)} Matches")
+
+        for idx, row in today_matches.iterrows():
+            with st.expander(f"🕹️ {row['name']}"):
+                st.markdown(f"📍 Venue: _{row['venue']}_")
+    else:
+        st.metric("❌ No Match Today", "")
+        st.write("Enjoy the break 😄")
 
 # Cap Holders in Sidebar
 most_runs_df = pd.read_sql(queries.most_runs(), engine)
