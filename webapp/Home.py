@@ -70,7 +70,7 @@ with col2:
                     if 'score' in live_data:
                         col1, col2 = st.columns(2)
                         for i, inning in enumerate(live_data['score']):
-                            team = inning.get('inning', 'N/A')
+                            team = inning.get('inning', 'N/A').rsplit(' Inning', 1)[0]
                             runs = inning.get('r', 0)
                             wickets = inning.get('w', 0)
                             overs = inning.get('o', 0)
