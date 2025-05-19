@@ -143,3 +143,9 @@ def get_fours():
         ORDER BY `4s` DESC, `Total Runs` DESC
         LIMIT 10;
     """
+
+def total_runs():
+    return"""
+        SELECT SUM(runs) as Runs
+        FROM innings;
+        """

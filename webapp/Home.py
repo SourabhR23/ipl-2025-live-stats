@@ -115,6 +115,9 @@ wkts = int(most_wks_df['Wickets'][0])
 team = most_wks_df['Team'][0]
 render_cap_holder("Purple", purple_cap_holder, team, wkts, "#6a0dad", "💜", "Wickets")
 
+total_runs = pd.read_sql(queries.total_runs(), engine)
+st.sidebar.markdown(f"TOTAL RUNS: {total_runs}")
+
 st.markdown("---")
 
 # Team Logos Display
