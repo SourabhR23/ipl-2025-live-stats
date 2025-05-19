@@ -4,6 +4,10 @@ import os
 from dotenv import load_dotenv
 import json
 from datetime import datetime, time
+from pytz import timezone
+
+IST = timezone('Asia/Kolkata')
+
 
 # Log the score data
 CALL_LOG_FILE = "api_call_log.json"
@@ -15,7 +19,7 @@ BASE_URL = "https://api.cricapi.com/v1/match_scorecard"
 
 # Check match time for refreshing the live scoreboard
 def is_match_time():
-    now = datetime.now()
+    now = datetime.now(IST)
     today = now.weekday()  # Sunday=6
     current_time = now.time()
 
