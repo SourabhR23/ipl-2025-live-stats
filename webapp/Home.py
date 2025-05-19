@@ -52,7 +52,13 @@ with col2:
 
         for idx, row in today_matches.iterrows():
             match_id = row['id']
-            with st.expander(f"🕹️ {row['name']}"):
+            match_name = row['name']
+            with st.expander(f"🕹️ Match {idx + 1}"):
+                st.markdown(f"""
+                <div style="font-size:22px; font-weight:bold; color:#f5f5f5; margin-bottom:5px;">
+                    🏏 {match_name}
+                </div>
+                """, unsafe_allow_html=True)
                 st.markdown(f"📍 **Venue:** _{row['venue']}_")
                 st.caption("🕒 Scores update at scheduled match intervals.")
 
