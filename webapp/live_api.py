@@ -10,7 +10,7 @@ CALL_LOG_FILE = "api_call_log.json"
 
 # Connect to API
 load_dotenv()
-CRIC_API_KEY = st.secrets["CRIC_API_KEY"]
+CRIC_API_KEY = os.getenv("CRIC_API_KEY")
 BASE_URL = "https://api.cricapi.com/v1/match_scorecard"
 
 # Check match time for refreshing the live scoreboard
@@ -48,7 +48,7 @@ def can_call_api():
     return False
 
 # Get live data
-@st.cache_data(ttl=10800)
+#@st.cache_data(ttl=10800)
 def get_live_data(match_id):
     try:
         params = {"apikey": CRIC_API_KEY, "id": match_id}
