@@ -62,7 +62,7 @@ with col2:
                     🏏 {match_name}
                 </div>
                 """, unsafe_allow_html=True)
-                st.markdown(f"📍 **Date:**_{match_date}_ , **Venue:** _{row['venue']}_")
+                st.markdown(f"📍 **Date:**    _{match_date}_ , **Venue:**    _{row['venue']}_")
                 st.caption("🕒 Scores update at scheduled match intervals.")
 
                 slot_key = get_current_slot()
