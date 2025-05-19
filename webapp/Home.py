@@ -54,6 +54,7 @@ with col2:
             match_id = row['id']
             match_name = row['name']
             match_number = match_name.split(",")[-1].strip()
+            match_date = row['match_date']
 
             with st.expander(f"🕹️ {match_number}"):
                 st.markdown(f"""
@@ -61,7 +62,7 @@ with col2:
                     🏏 {match_name}
                 </div>
                 """, unsafe_allow_html=True)
-                st.markdown(f"📍 **Venue:** _{row['venue']}_")
+                st.markdown(f"📍 **Date:**_{match_date}_ , **Venue:** _{row['venue']}_")
                 st.caption("🕒 Scores update at scheduled match intervals.")
 
                 slot_key = get_current_slot()
