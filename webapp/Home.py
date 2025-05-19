@@ -53,7 +53,9 @@ with col2:
         for idx, row in today_matches.iterrows():
             match_id = row['id']
             match_name = row['name']
-            with st.expander(f"🕹️ Match {idx + 1}"):
+            match_number = match_name.split(",")[-1].strip()
+
+            with st.expander(f"🕹️ {match_number}"):
                 st.markdown(f"""
                 <div style="font-size:22px; font-weight:bold; color:#f5f5f5; margin-bottom:5px;">
                     🏏 {match_name}
