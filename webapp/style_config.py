@@ -22,7 +22,16 @@ TEAM_COLORS = {
 }
 
 TEAM_LOGO_PATHS = {
-    team: os.path.join("webapp", "images", team.split()[0] + ".png") for team in TEAM_COLORS
+    "Kolkata Knight Riders": os.path.join("webapp", "images", "Kolkata.png"),
+    "Mumbai Indians": os.path.join("webapp", "images", "Mumbai.png"),
+    "Chennai Super Kings": os.path.join("webapp", "images", "Chennai.png"),
+    "Royal Challengers Bengaluru": os.path.join("webapp", "images", "Bengaluru.png"),
+    "Delhi Capitals": os.path.join("webapp", "images", "Delhi.png"),
+    "Rajasthan Royals": os.path.join("webapp", "images", "Rajasthan.png"),
+    "Gujarat Titans": os.path.join("webapp", "images", "Gujarat.png"),
+    "Sunrisers Hyderabad": os.path.join("webapp", "images", "Hyderabad.png"),
+    "Lucknow Super Giants": os.path.join("webapp", "images", "Lucknow.png"),
+    "Punjab Kings": os.path.join("webapp", "images", "Punjab.png")
 }
 
 # ─────────────────────────────────────────────
