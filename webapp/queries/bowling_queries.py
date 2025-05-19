@@ -190,3 +190,9 @@ def best_eco():
         ORDER BY Eco ASC
         LIMIT 10;
     """
+
+def total_wkts():
+    return"""
+        SELECT SUM(wickets) as `Total Wickets`
+        FROM innings;
+        """

@@ -115,8 +115,34 @@ wkts = int(most_wks_df['Wickets'][0])
 team = most_wks_df['Team'][0]
 render_cap_holder("Purple", purple_cap_holder, team, wkts, "#6a0dad", "💜", "Wickets")
 
-total_runs = pd.read_sql(queries.total_runs(), engine)
-st.sidebar.markdown(f"TOTAL RUNS: {total_runs}")
+# Create Tabs
+tab1, tab2 = st.sidebar.tabs(["🧮 Summary", "🚀 Boundaries"])
+
+# Animated Metrics (Tab 1)
+with tab1:
+
+    tr = pd.read_sql(queries.total_runs(), engine)
+    total_runs = int(tr.iloc[0, 0])
+    st.metric(label="🏃 Total Runs", value=total_runs)
+    st.markdown(f"<div style='height:6px; background:#FFD166; border-radius:5px;'></div>", unsafe_allow_html=True)
+
+    tw = pd.read_sql(queries.total_wkts(), engine)
+    total_wkts = int(tw.iloc[0, 0]) 
+    st.metric(label="🎯 Total Wickets", value=total_wkts)
+    st.markdown(f"<div style='height:6px; background:#E91E63; border-radius:5px;'></div>", unsafe_allow_html=True)
+
+# Animated Metrics (Tab 2)
+with tab2:
+
+    ts = pd.read_sql(queries.total_sixes(), engine)
+    total_six = int(ts.iloc[0, 0])
+    st.metric(label="🎇 Total Sixes", value=total_six)
+    st.markdown(f"<div style='height:6px; background:#00BCD4; border-radius:5px;'></div>", unsafe_allow_html=True)
+
+    tf = pd.read_sql(queries.total_fours(), engine)
+    total_fours = int(tf.iloc[0, 0])
+    st.metric(label="🚀 Total Fours", value=total_fours)
+    st.markdown(f"<div style='height:6px; background:#8BC34A; border-radius:5px;'></div>", unsafe_allow_html=True)
 
 st.markdown("---")
 

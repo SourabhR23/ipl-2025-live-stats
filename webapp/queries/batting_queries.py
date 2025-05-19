@@ -146,6 +146,18 @@ def get_fours():
 
 def total_runs():
     return"""
-        SELECT SUM(runs) as Runs
+        SELECT SUM(runs) as `Total Runs`
         FROM innings;
+        """
+
+def total_sixes():
+    return"""
+        SELECT SUM(sixes) 
+        FROM batting_df;
+        """
+
+def total_fours():
+    return"""
+        SELECT SUM(fours) 
+        FROM batting_df;
         """
