@@ -4,9 +4,13 @@ from datetime import datetime
 from db_connection import get_engine
 import queries
 from style_config import *
-from live_api import get_live_data, can_call_api
+from live_api import get_live_data, can_call_api, reset_api_log_if_needed
 from pytz import timezone
 
+# Reset logs
+reset_api_log_if_needed()
+
+# Setting up IST Timezone
 IST = timezone("Asia/Kolkata")
 current_ist = datetime.now(IST)
 

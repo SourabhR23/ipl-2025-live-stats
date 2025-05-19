@@ -4,13 +4,14 @@ import os
 from dotenv import load_dotenv
 import json
 from datetime import datetime, time
-from pytz import timezone
-
-IST = timezone('Asia/Kolkata')
-
+import pytz
 
 # Log the score data
 CALL_LOG_FILE = "api_call_log.json"
+
+def get_current_ist():
+    IST = pytz.timezone("Asia/Kolkata")
+    return datetime.now(IST)
 
 # Connect to API
 load_dotenv()
@@ -19,7 +20,7 @@ BASE_URL = "https://api.cricapi.com/v1/match_scorecard"
 
 # Check match time for refreshing the live scoreboard
 def is_match_time():
-    now = datetime.now(IST)
+    now = get_current_ist()
     today = now.weekday()  # Sunday=6
     current_time = now.time()
 
@@ -52,7 +53,7 @@ def can_call_api():
     return False
 
 # Get live data
-#@st.cache_data(ttl=10800)
+@st.cache_data(ttl=5400)
 def get_live_data(match_id):
     try:
         params = {"apikey": CRIC_API_KEY, "id": match_id}
@@ -69,3 +70,21 @@ def get_live_data(match_id):
     except Exception as e:
         st.error(f"❌ Exception: {e}")
     return None
+
+def reset_api_log_if_needed():
+    today_str = get_current_ist().strftime("%Y-%m-%d")
+    
+    if not os.path.exists(CALL_LOG_FILE):
+        return
+
+    with open(CALL_LOG_FILE, "r") as f:
+        try:
+            log = json.load(f)
+        except json.JSONDecodeError:
+            log = {}
+
+    # Keep only today's entry
+    updated_log = {today_str: log.get(today_str, 0)}
+    
+    with open(CALL_LOG_FILE, "w") as f:
+        json.dump(updated_log, f)
