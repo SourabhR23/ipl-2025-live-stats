@@ -175,76 +175,89 @@ def get_fours():
 
 def most_wickets():
     return """
-            WITH bowler_stats AS (
+        WITH bowler_base AS (
+            SELECT 
+                b.bowler_name,
+                s.teamName AS Team,
+                b.match_id,
+                CAST(b.overs AS DECIMAL(4,1)) AS overs,
+                b.wickets,
+                b.runs_conceded
+            FROM bowling_df b
+            JOIN squad_df s ON b.bowler_id = s.playerId
+        ),
+
+        bowler_stats AS (
+            SELECT 
+                bowler_name,
+                Team,
+                COUNT(DISTINCT match_id) AS Matches,
+                SUM(overs) AS Overs,
+                SUM(FLOOR(overs) * 6 + ROUND((overs - FLOOR(overs)) * 10)) AS Balls,
+                SUM(wickets) AS Wickets,
+                SUM(runs_conceded) AS `Runs Conceded`,
+                SUM(CASE WHEN wickets = 4 THEN 1 ELSE 0 END) AS `4W`,
+                SUM(CASE WHEN wickets >= 5 THEN 1 ELSE 0 END) AS `5W`,
+
+                ROUND(
+                    CASE 
+                        WHEN SUM(wickets) > 0 THEN SUM(runs_conceded) / SUM(wickets)
+                        ELSE NULL
+                    END, 2
+                ) AS Average,
+
+                ROUND(
+                    SUM(runs_conceded) / 
+                    (SUM(FLOOR(overs) * 6 + ROUND((overs - FLOOR(overs)) * 10)) / 6), 
+                    2
+                ) AS Economy,
+
+                ROUND(
+                    CASE 
+                        WHEN SUM(wickets) > 0 THEN 
+                            SUM(FLOOR(overs) * 6 + ROUND((overs - FLOOR(overs)) * 10)) / SUM(wickets)
+                        ELSE NULL
+                    END, 2
+                ) AS `Strike Rate`
+            FROM bowler_base
+            GROUP BY bowler_name, Team
+        ),
+
+        bbi_per_bowler AS (
+            SELECT 
+                b.bowler_name,
+                CONCAT(MIN(b.runs_conceded), '/', b.wickets) AS BBI
+            FROM bowling_df b
+            WHERE (b.bowler_name, b.wickets) IN (
                 SELECT 
-                    bowler_name,
-                    REPLACE(b.inning_name, ' Inning 1', '') AS Team,
-                    COUNT(DISTINCT match_id) AS Matches,
-                    SUM(CAST(overs AS DECIMAL(4,1))) AS Overs,
-                    SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) AS Balls,
-                    SUM(wickets) AS Wickets,
-                    SUM(runs_conceded) AS `Runs Conceded`,
-                    SUM(CASE WHEN wickets = 4 THEN 1 ELSE 0 END) AS `4W`,
-                    SUM(CASE WHEN wickets >= 5 THEN 1 ELSE 0 END) AS `5W`,
-
-                    ROUND(
-                        CASE 
-                            WHEN SUM(wickets) > 0 THEN SUM(runs_conceded) / SUM(wickets)
-                            ELSE NULL
-                        END, 2
-                    ) AS Average,
-
-                    ROUND(
-                        SUM(runs_conceded) / 
-                        (SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) / 6), 
-                        2
-                    ) AS Economy,
-
-                    ROUND(
-                        CASE 
-                            WHEN SUM(wickets) > 0 THEN 
-                                SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) / SUM(wickets)
-                            ELSE NULL
-                        END, 2
-                    ) AS `Strike Rate`
+                    bowler_name, MAX(wickets)
                 FROM bowling_df
                 GROUP BY bowler_name
-            ),
-
-            bbi_per_bowler AS (
-                SELECT 
-                    bowler_name,
-                    CONCAT(MIN(runs_conceded), '/', wickets) AS BBI
-                FROM bowling_df
-                WHERE (bowler_name, wickets) IN (
-                    SELECT 
-                        bowler_name, MAX(wickets)
-                    FROM bowling_df
-                    GROUP BY bowler_name
-                )
-                GROUP BY bowler_name, wickets
             )
+            GROUP BY b.bowler_name, b.wickets
+        )
 
-            SELECT 
-                s.bowler_name AS Bowler,
-                s.Team,
-                s.Matches,
-                s.Wickets,
-                s.`Runs Conceded`,
-                s.Overs,
-                s.Balls,
-                s.Average,
-                s.Economy,
-                s.`Strike Rate`,
-                s.`4W`,
-                s.`5W`,
-                b.BBI
+        SELECT 
+            s.bowler_name AS Bowler,
+            s.Team,
+            s.Matches,
+            s.Wickets,
+            s.`Runs Conceded`,
+            s.Overs,
+            s.Balls,
+            s.Average,
+            s.Economy,
+            s.`Strike Rate`,
+            s.`4W`,
+            s.`5W`,
+            b.BBI
 
-            FROM bowler_stats s
-            LEFT JOIN bbi_per_bowler b ON s.bowler_name = b.bowler_name
-            ORDER BY Wickets DESC
-            LIMIT 10;
-        """
+        FROM bowler_stats s
+        LEFT JOIN bbi_per_bowler b ON s.bowler_name = b.bowler_name
+        ORDER BY s.Wickets DESC
+        LIMIT 10;
+    """
+
 
 def bowl_avg():
     return """
