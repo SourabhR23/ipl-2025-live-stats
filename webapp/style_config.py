@@ -130,11 +130,13 @@ def styled_table(df, highlight_col=None, name_col=None):
         'selector': 'th',
         'props': [('background-color', '#111'), ('color', 'white'), ('text-align', 'center')]
     }]).format({col: '{:,.0f}' for col in df.select_dtypes(include='number').columns})
-
+    
+    # Highlight highest runs in columns
     if highlight_col in df.columns:
         style = style.highlight_max(subset=[highlight_col], color='#2ecc71', axis=0)
-
-    if name_col and highlight_col in df.columns and name_col in df.columns:
+    
+    # Highlight name of player with highest runs
+    if name_col and highlight_col and highlight_col in df.columns and name_col in df.columns:
         max_val = df[highlight_col].max()
         style = style.apply(lambda row: [
             'color: #f39c12; font-weight: bold;' if row[highlight_col] == max_val and col == name_col else ''
@@ -143,7 +145,7 @@ def styled_table(df, highlight_col=None, name_col=None):
 
     return style
 
-def ballstyle_table(df: pd.DataFrame):
+def style_table(df: pd.DataFrame):
     return (
         df.style
         .set_properties(**{
@@ -161,6 +163,28 @@ def ballstyle_table(df: pd.DataFrame):
                       ('text-align', 'center')]
         }])
         .format(na_rep="-", formatter={
+            col: '{:,.2f}' if col in ['Economy', 'Avg', 'SR'] else ('{:,.1f}' if col == 'Overs' else '{:,.0f}')
+            for col in df.select_dtypes(include=['float', 'int']).columns
+        })
+    )
+
+def ballstyle_table(df: pd.DataFrame):
+    return (
+        df.style
+        .set_properties(**{
+            'background-color': '#121212',   # deep dark gray
+            'color': 'white',
+            'border-color': '#333',
+            'font-size': '12px',
+            'text-align': 'center'
+        })
+        .set_table_styles([{
+            'selector': 'th',
+            'props': [('background-color', '#1f1f1f'),
+                      ('color', 'white'),
+                      ('font-weight', 'bold'),
+                      ('text-align', 'center')]
+        }]).format(na_rep="-", formatter={
             col: '{:,.1f}' if col == 'Overs' else '{:,.0f}'
             for col in df.select_dtypes(include=['float', 'int']).columns
         })
