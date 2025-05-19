@@ -95,12 +95,13 @@ def scorecard(team, runs, wickets, overs, color, logo_path=None):
     </div>
     """
 
-def render_cap_holder(cap_type, name, value, color, emoji, unit):
+def render_cap_holder(cap_type, name, team, value, color, emoji, unit):
     st.sidebar.markdown(f"""
     <div style='background-color:{color};padding:16px;border-radius:12px;
                 text-align:center;margin-bottom:10px;box-shadow: 0 4px 10px rgba(0,0,0,0.3);'>
         <div style='font-size:20px;'>{emoji} <b>{cap_type} Cap</b></div>
         <div style='font-size:18px;font-weight:bold;color:white;margin-top:10px;'>{name}</div>
+        <div style='font-size:12px;font-weight:bold;color:white;margin-top:10px;'>{team}</div>
         <div style='font-size:14px;color:white;'>✨ <b>{value} {unit}</b></div>
     </div>
     """, unsafe_allow_html=True)
