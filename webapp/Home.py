@@ -4,13 +4,10 @@ from datetime import datetime
 from db_connection import get_engine
 import queries
 from style_config import *
-from live_api import get_live_data, can_call_api, reset_api_log_if_needed
+from live_api import get_live_data_scheduled, get_current_ist, get_current_slot
 from pytz import timezone
 
-# Reset logs
-reset_api_log_if_needed()
-
-# Setting up IST Timezone
+# --- Setup Time ---
 IST = timezone("Asia/Kolkata")
 current_ist = datetime.now(IST)
 
@@ -34,16 +31,12 @@ st.markdown("""
 render_logo_and_title("IPL 2025 Live Dashboard")
 
 # Load match data
-matches_df = pd.read_sql(queries.get_all_matches(), engine)
 all_matches = pd.read_sql(queries.get_live_match(), engine)
+matches_df = pd.read_sql(queries.get_all_matches(), engine)
 
-# Convert date column to datetime if not already
+# Prepare date filtering
 all_matches['match_date'] = pd.to_datetime(all_matches['match_date']).dt.date
-
-# Get today's date
-today = datetime.today().date()
-
-# Filter matches happening today
+today = get_current_ist().date()
 today_matches = all_matches[all_matches['match_date'] == today]
 
 # Key Stats
@@ -61,17 +54,18 @@ with col2:
             match_id = row['id']
             with st.expander(f"🕹️ {row['name']}"):
                 st.markdown(f"📍 **Venue:** _{row['venue']}_")
-                st.caption("🕒 Scores last updated from CricAPI (Max 5 API hits/day).")
+                st.caption("🕒 Scores update at scheduled match intervals.")
 
-                if can_call_api():
-                    live_data = get_live_data(match_id)
-                    st.caption(f"✅ Fetched live at {current_ist.strftime('%I:%M %p IST')}")
+                slot_key = get_current_slot()
+
+                if slot_key:
+                    live_data = get_live_data_scheduled(match_id, slot_key)
+                    st.caption(f"✅ Fetched live at {slot_key} IST")
                 else:
-                    st.warning("⚠️ Live fetch blocked (limit reached or outside match time).")
                     live_data = None
+                    st.warning("⚠️ Outside scheduled match refresh slots.")
 
                 if live_data:
-                    # 🔄 Extract and display match status
                     match_status = live_data.get('status', 'Unknown')
                     st.markdown(f"""
                         <div style="background-color:#444;padding:8px 16px;border-radius:8px;display:inline-block;margin-bottom:10px;">
@@ -97,7 +91,7 @@ with col2:
                     else:
                         st.info("Live score not available yet.")
                 else:
-                    st.info("Match has not started or data unavailable.")
+                    st.info("Match has not started or outside live update time.")
 
 # Cap Holders in Sidebar
 most_runs_df = pd.read_sql(queries.most_runs(), engine)
@@ -122,26 +116,22 @@ st.markdown("---")
 
 # Feature Panels
 st.markdown("### 🚀 Explore Dashboard Features")
-
 left, mid, right = st.columns(3)
 
 with left:
     st.markdown("#### 📋 Match Scoreboard")
     st.markdown("View live or past match scorecards with batting & bowling breakdowns.")
-    st.image("https://img.icons8.com/external-konkapp-outline-color-konkapp/64/external-scoreboard-soccer-konkapp-outline-color-konkapp.png", 
-             width=60)
+    st.image("https://img.icons8.com/external-konkapp-outline-color-konkapp/64/external-scoreboard-soccer-konkapp-outline-color-konkapp.png", width=60)
 
 with mid:
     st.markdown("#### 📊 League Stats")
     st.markdown("Check out league leaders: runs, wickets, averages, 5-fers, and more.")
-    st.image("https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/64/external-analytics-business-kiranshastry-lineal-color-kiranshastry-2.png", 
-             width=60)
+    st.image("https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/64/external-analytics-business-kiranshastry-lineal-color-kiranshastry-2.png", width=60)
 
 with right:
     st.markdown("#### 📈 Points Table")
     st.markdown("Track team standings, net run rate, wins/losses and form.")
-    st.image("https://img.icons8.com/external-filled-line-andi-nur-abdillah/64/external-Leaderboard-gaming-(filled-line)-filled-line-andi-nur-abdillah.png", 
-             width=60)
+    st.image("https://img.icons8.com/external-filled-line-andi-nur-abdillah/64/external-Leaderboard-gaming-(filled-line)-filled-line-andi-nur-abdillah.png", width=60)
 
 st.markdown("---")
 
