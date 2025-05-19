@@ -178,6 +178,7 @@ def most_wickets():
             WITH bowler_stats AS (
                 SELECT 
                     bowler_name,
+                    REPLACE(b.inning_name, ' Inning 1', '') AS Team,
                     COUNT(DISTINCT match_id) AS Matches,
                     SUM(CAST(overs AS DECIMAL(4,1))) AS Overs,
                     SUM(FLOOR(CAST(overs AS DECIMAL(4,1))) * 6 + ROUND((CAST(overs AS DECIMAL(4,1)) - FLOOR(CAST(overs AS DECIMAL(4,1)))) * 10)) AS Balls,
@@ -226,7 +227,7 @@ def most_wickets():
 
             SELECT 
                 s.bowler_name AS Bowler,
-                REPLACE(s.inning_name, ' Inning 1', '') AS Team,
+                s.Team,
                 s.Matches,
                 s.Wickets,
                 s.`Runs Conceded`,
