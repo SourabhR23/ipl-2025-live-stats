@@ -31,12 +31,15 @@ match_id = matches_df[matches_df['match_name'] == selected_match]['match_id'].va
 venue = matches_df[matches_df['match_name'] == selected_match]['venue'].values[0]
 date =  matches_df[matches_df['match_name'] == selected_match]['date'].values[0]
 
-# Toss summary
+# Toss summary (safe null handling)
 toss_winner = matches_df[matches_df['match_name'] == selected_match]['toss_winner'].values[0]
 toss_choice = matches_df[matches_df['match_name'] == selected_match]['toss_choice'].values[0]
 
-# Toss Message
-st.subheader(f"🎲 {toss_winner} won the toss and chose to **{toss_choice.upper()}**")
+# Handle missing toss information
+if pd.isna(toss_winner) or pd.isna(toss_choice):
+    st.subheader("🎲 Toss did not happen or match was abandoned.")
+else:
+    st.subheader(f"🎲 {toss_winner} won the toss and chose to **{toss_choice.upper()}**")
 
 # Stylish Venue and Date Display
 st.markdown(f"""
