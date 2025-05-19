@@ -4,7 +4,7 @@ from datetime import datetime
 from db_connection import get_engine
 import queries
 from style_config import *
-from live_api import get_live_data
+from live_api import get_live_data, can_call_api
 
 
 # Load data
@@ -54,9 +54,14 @@ with col2:
             match_id = row['id']
             with st.expander(f"🕹️ {row['name']}"):
                 st.markdown(f"📍 **Venue:** _{row['venue']}_")
-                st.caption("🕒 Scores last updated from CricAPI. Cached for 3 hours to reduce API usage.")
+                st.caption("🕒 Scores last updated from CricAPI (Max 5 API hits/day).")
 
-                live_data = get_live_data(match_id)
+                if can_call_api():
+                    live_data = get_live_data(match_id)
+                    st.caption(f"✅ Fetched live at {datetime.now().strftime('%I:%M %p')}")
+                else:
+                    st.warning("⚠️ Live fetch blocked (limit reached or outside match time).")
+                    live_data = None
 
                 if live_data:
                     # 🔄 Extract and display match status
