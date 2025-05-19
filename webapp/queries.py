@@ -226,6 +226,7 @@ def most_wickets():
 
             SELECT 
                 s.bowler_name AS Bowler,
+                REPLACE(s.inning_name, ' Inning 1', '') AS Team,
                 s.Matches,
                 s.Wickets,
                 s.`Runs Conceded`,

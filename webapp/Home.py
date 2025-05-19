@@ -96,12 +96,14 @@ with col2:
 most_runs_df = pd.read_sql(queries.most_runs(), engine)
 orange_cap_holder = most_runs_df['Batsman'][0]
 runs = int(most_runs_df['Runs'][0])
-render_cap_holder("Orange", orange_cap_holder, runs, "#FF6F00", "🧡", "Runs")
+team = most_runs_df['Team'][0]
+render_cap_holder("Orange", orange_cap_holder, team, runs, "#FF6F00", "🧡", "Runs")
 
 most_wks_df = pd.read_sql(queries.most_wickets(), engine)
 purple_cap_holder = most_wks_df['Bowler'][0]
 wkts = int(most_wks_df['Wickets'][0])
-render_cap_holder("Purple", purple_cap_holder, wkts, "#6a0dad", "💜", "Wickets")
+team = most_wks_df['Team'][0]
+render_cap_holder("Purple", purple_cap_holder, team, wkts, "#6a0dad", "💜", "Wickets")
 
 st.markdown("---")
 
