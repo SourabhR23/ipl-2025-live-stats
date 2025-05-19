@@ -5,7 +5,10 @@ from db_connection import get_engine
 import queries
 from style_config import *
 from live_api import get_live_data, can_call_api
+from pytz import timezone
 
+IST = timezone("Asia/Kolkata")
+current_ist = datetime.now(IST)
 
 # Load data
 engine = get_engine()
@@ -58,7 +61,7 @@ with col2:
 
                 if can_call_api():
                     live_data = get_live_data(match_id)
-                    st.caption(f"✅ Fetched live at {datetime.now().strftime('%I:%M %p')}")
+                    st.caption(f"✅ Fetched live at {current_ist.strftime('%I:%M %p IST')}")
                 else:
                     st.warning("⚠️ Live fetch blocked (limit reached or outside match time).")
                     live_data = None
