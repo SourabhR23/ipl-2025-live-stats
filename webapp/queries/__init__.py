@@ -4,3 +4,4 @@ from .bowling_queries import *
 from .fielding_queries import *
 from .scorecard_queries import *
 from .table_queries import *
+from .h2h import *
