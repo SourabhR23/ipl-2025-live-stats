@@ -30,6 +30,15 @@ def get_current_slot():
             return slot.strftime("%H:%M")  # Returns '20:00', '21:30', etc.
     return None
 
+# 🔁 Auto-refresh logic (triggered if slot changes)
+def auto_refresh_by_slot():
+    current_slot = get_current_slot()
+    if "last_slot" not in st.session_state:
+        st.session_state.last_slot = current_slot
+    elif st.session_state.last_slot != current_slot:
+        st.session_state.last_slot = current_slot
+        st.experimental_rerun()
+
 # ✅ Cache per (match_id + slot_key) to limit API hits
 @st.cache_data
 def get_live_data_scheduled(match_id, slot_key):

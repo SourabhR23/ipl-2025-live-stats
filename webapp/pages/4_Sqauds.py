@@ -50,7 +50,7 @@ if selected_team != "Select Team":
     squad['role'] = squad['role'].str.lower()
 
     # Define role categories
-    categories = {
+    categories = { 
         'WK-Batsman': ['wk-batsman'],
         'Batsmen': ['batsman'],
         'All-rounders': ['allrounder', 'batting allrounder', 'bowling allrounder'],

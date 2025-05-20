@@ -4,8 +4,11 @@ from datetime import datetime
 from db_connection import get_engine
 import queries
 from style_config import *
-from live_api import get_live_data_scheduled, get_current_ist, get_current_slot
+from live_api import get_live_data_scheduled, get_current_ist, get_current_slot, auto_refresh_by_slot
 from pytz import timezone
+
+# Auto-Refresh for Live Match Data
+auto_refresh_by_slot()
 
 # --- Setup Time ---
 IST = timezone("Asia/Kolkata")
