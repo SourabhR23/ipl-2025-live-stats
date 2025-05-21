@@ -86,6 +86,7 @@ def get_team_color(team):
 
 def scorecard(team, runs, wickets, overs, color, logo_path=None):
     logo_html = ""
+
     if logo_path and os.path.exists(logo_path):
         with open(logo_path, "rb") as img:
             encoded = base64.b64encode(img.read()).decode()
@@ -93,13 +94,15 @@ def scorecard(team, runs, wickets, overs, color, logo_path=None):
 
     return f"""
     <div style="background-color:{color}; padding:20px; border-radius:15px;
-                display:flex; justify-content:space-between; align-items:left;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-        <div>{logo_html}</div>
-        <div style="text-align:right; flex:1;">
-            <h2 style="color:white; margin:0;">{team}</h2>
-            <h1 style="color:white; margin:5px 0; font-size:36px;">{runs} / {wickets}</h1>
-            <p style="color:white; margin:0; font-size:18px;">Overs: {overs}</p>
+                display:flex; justify-content:space-between; align-items:center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2); min-height:150px;">
+        <div style="flex-shrink: 0;">{logo_html}</div>
+        <div style="text-align:right; flex:1; max-width: 100%;">
+            <h2 style="color:white; margin:0; font-size:25px;
+                       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                       max-width: 100%;">{team}</h2>
+            <h1 style="color:white; margin:5px 0; font-size:32px;">{runs} / {wickets}</h1>
+            <p style="color:white; margin:19px; font-size:15px;">Overs: {overs}</p>
         </div>
     </div>
     """
