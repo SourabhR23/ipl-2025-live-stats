@@ -1,7 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pytz
 import streamlit as st
 
@@ -12,8 +12,8 @@ BASE_URL = "https://api.cricapi.com/v1/match_scorecard"
 
 # Define refresh slots (IST)
 ALLOWED_SLOTS_IST = [
-    time(16, 0), time(17, 30), time(19, 0), time(20, 30),  # Weekend Match 1
-    time(20, 0), time(21, 30), time(23, 0), time(0, 30)    # Common Evening Slots
+    time(16, 0), time(17, 30), time(19, 0), time(20, 0), 
+    time(20, 30), time(21, 30), time(23, 0), time(0, 30)  # Evening + Midnight slots
 ]
 
 # ✅ Get current IST time
@@ -21,13 +21,25 @@ def get_current_ist():
     IST = pytz.timezone("Asia/Kolkata")
     return datetime.now(IST)
 
-# ✅ Get active refresh slot (if now >= slot)
+# ✅ Get active refresh slot (handles across midnight)
 def get_current_slot():
     now = get_current_ist()
-    current_time = now.time()
-    for slot in reversed(ALLOWED_SLOTS_IST):
-        if current_time >= slot:
-            return slot.strftime("%H:%M")  # Returns '20:00', '21:30', etc.
+    today = now.date()
+    ist = pytz.timezone("Asia/Kolkata")
+
+    # Generate datetime slots: today for normal, tomorrow for post-midnight
+    slots = []
+    for slot in ALLOWED_SLOTS_IST:
+        dt_slot = datetime.combine(today, slot)
+        if slot < time(1, 0):  # Slot like 00:30 belongs to *next day*
+            dt_slot += timedelta(days=1)
+        slots.append(ist.localize(dt_slot))
+
+    # Reverse and get the latest eligible slot
+    for dt in reversed(slots):
+        if now >= dt:
+            return dt.strftime("%H:%M")
+
     return None
 
 # 🔁 Auto-refresh logic (triggered if slot changes)
