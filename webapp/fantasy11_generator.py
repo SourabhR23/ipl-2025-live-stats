@@ -14,11 +14,24 @@ def generate_fantasy_xi_for_match(team1, team2, recent_n, strategy="balanced", e
     player_ids = selected_squad['playerId'].astype(str).unique()
 
     # Filter recent matches
-    recent_match_ids = batting_df['match_id'].drop_duplicates().tail(recent_n).tolist()
-    bat_recent = batting_df[batting_df['batsman_id'].astype(str).isin(player_ids) &
-                            batting_df['match_id'].isin(recent_match_ids)]
-    bowl_recent = bowling_df[bowling_df['bowler_id'].astype(str).isin(player_ids) &
-                             bowling_df['match_id'].isin(recent_match_ids)]
+    # Fetch matches involving either team1 or team2
+    matches_df = pd.read_sql("SELECT match_id, date, team1, team2 FROM matches ORDER BY date DESC", engine)
+    team_matches = matches_df[
+        (matches_df['team1'].isin([team1, team2])) | (matches_df['team2'].isin([team1, team2]))
+    ]
+
+    # Get last `recent_n` matches involving these two teams
+    recent_match_ids = team_matches.sort_values('date', ascending=False).head(recent_n)['match_id'].tolist()
+
+    # Now filter performance only from these matches
+    bat_recent = batting_df[
+        (batting_df['batsman_id'].astype(str).isin(player_ids)) &
+        (batting_df['match_id'].isin(recent_match_ids))
+    ]
+    bowl_recent = bowling_df[
+        (bowling_df['bowler_id'].astype(str).isin(player_ids)) &
+        (bowling_df['match_id'].isin(recent_match_ids))
+    ]
 
     # Aggregate performance
     bat_stats = bat_recent.groupby('batsman_id').agg({'runs': 'sum'}).rename(columns={'runs': 'Runs'})
